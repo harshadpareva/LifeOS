@@ -2,9 +2,158 @@
 <html>
 <head>
   <title>LifeOS</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    .container {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .header {
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      color: #666;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin: 0 0 14px;
+    }
+
+    .task {
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .task:last-child {
+      border-bottom: none;
+    }
+
+    .task-title {
+      font-weight: bold;
+    }
+
+    .task-meta {
+      font-size: 13px;
+      color: #777;
+      margin-top: 5px;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    .button {
+      display: block;
+      text-align: center;
+      background: #111;
+      color: white;
+      padding: 16px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>LifeOS</h1>
-  <p>This is my personal system to build consistency and design a better life.</p>
+  <div class="container">
+
+    <div class="header">
+      <h1>Good Morning, Harshad</h1>
+      <p>Today’s plan • LifeOS</p>
+    </div>
+
+    <div class="card">
+      <h2>⭐ Important Today</h2>
+
+      <div class="task">
+        <div class="task-title">☐ Workout</div>
+        <div class="task-meta">Planned: 7:00 PM • Actual: —</div>
+      </div>
+
+      <div class="task">
+        <div class="task-title">☐ Study CFA</div>
+        <div class="task-meta">Planned: 2:30 PM • Actual: —</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>• Daily Flow</h2>
+
+      <div class="task">
+        <div class="task-title">☐ Wake up</div>
+        <div class="task-meta">Planned: 7:00 AM</div>
+      </div>
+
+      <div class="task">
+        <div class="task-title">☐ Get ready</div>
+        <div class="task-meta">Around 30 minutes</div>
+      </div>
+
+      <div class="task">
+        <div class="task-title">☐ Prayer</div>
+        <div class="task-meta">Before leaving home</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⚪ Small Things</h2>
+
+      <div class="task">
+        <div class="task-title">☐ Perfume</div>
+      </div>
+
+      <div class="task">
+        <div class="task-title">☐ Sunscreen</div>
+      </div>
+
+      <div class="task">
+        <div class="task-title">☐ Mint / Chewing gum</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Today Summary</h2>
+      <div class="summary">
+        <span>Completed</span>
+        <span>0 / 8</span>
+      </div>
+      <br>
+      <div class="summary">
+        <span>Important Done</span>
+        <span>0 / 2</span>
+      </div>
+    </div>
+
+    <a class="button" href="#">+ Add Task</a>
+
+  </div>
 </body>
 </html>
