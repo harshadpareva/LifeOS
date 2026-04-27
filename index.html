@@ -46,6 +46,7 @@
     .task {
       padding: 12px 0;
       border-bottom: 1px solid #eee;
+      cursor: pointer;
     }
 
     .task:last-child {
@@ -60,6 +61,11 @@
       font-size: 13px;
       color: #777;
       margin-top: 5px;
+    }
+
+    .completed .task-title {
+      text-decoration: line-through;
+      color: #777;
     }
 
     .summary {
@@ -93,12 +99,12 @@
     <div class="card">
       <h2>⭐ Important Today</h2>
 
-      <div class="task">
+      <div class="task important" onclick="completeTask(this)">
         <div class="task-title">☐ Workout</div>
         <div class="task-meta">Planned: 7:00 PM • Actual: —</div>
       </div>
 
-      <div class="task">
+      <div class="task important" onclick="completeTask(this)">
         <div class="task-title">☐ Study CFA</div>
         <div class="task-meta">Planned: 2:30 PM • Actual: —</div>
       </div>
@@ -107,35 +113,38 @@
     <div class="card">
       <h2>• Daily Flow</h2>
 
-      <div class="task">
+      <div class="task" onclick="completeTask(this)">
         <div class="task-title">☐ Wake up</div>
-        <div class="task-meta">Planned: 7:00 AM</div>
+        <div class="task-meta">Planned: 7:00 AM • Actual: —</div>
       </div>
 
-      <div class="task">
+      <div class="task" onclick="completeTask(this)">
         <div class="task-title">☐ Get ready</div>
-        <div class="task-meta">Around 30 minutes</div>
+        <div class="task-meta">Around 30 minutes • Actual: —</div>
       </div>
 
-      <div class="task">
+      <div class="task" onclick="completeTask(this)">
         <div class="task-title">☐ Prayer</div>
-        <div class="task-meta">Before leaving home</div>
+        <div class="task-meta">Before leaving home • Actual: —</div>
       </div>
     </div>
 
     <div class="card">
       <h2>⚪ Small Things</h2>
 
-      <div class="task">
+      <div class="task" onclick="completeTask(this)">
         <div class="task-title">☐ Perfume</div>
+        <div class="task-meta">Actual: —</div>
       </div>
 
-      <div class="task">
+      <div class="task" onclick="completeTask(this)">
         <div class="task-title">☐ Sunscreen</div>
+        <div class="task-meta">Actual: —</div>
       </div>
 
-      <div class="task">
+      <div class="task" onclick="completeTask(this)">
         <div class="task-title">☐ Mint / Chewing gum</div>
+        <div class="task-meta">Actual: —</div>
       </div>
     </div>
 
@@ -143,17 +152,62 @@
       <h2>Today Summary</h2>
       <div class="summary">
         <span>Completed</span>
-        <span>0 / 8</span>
+        <span id="completedCount">0 / 8</span>
       </div>
       <br>
       <div class="summary">
         <span>Important Done</span>
-        <span>0 / 2</span>
+        <span id="importantCount">0 / 2</span>
       </div>
     </div>
 
     <a class="button" href="#">+ Add Task</a>
 
   </div>
+
+  <script>
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
+
+    function completeTask(taskElement) {
+      if (taskElement.classList.contains('completed')) {
+        return;
+      }
+
+      taskElement.classList.add('completed');
+
+      const title = taskElement.querySelector('.task-title');
+      title.textContent = title.textContent.replace('☐', '✅');
+
+      const meta = taskElement.querySelector('.task-meta');
+      const currentTime = getCurrentTime();
+
+      if (meta.textContent.includes('Actual: —')) {
+        meta.textContent = meta.textContent.replace('Actual: —', 'Actual: ' + currentTime);
+      } else {
+        meta.textContent = meta.textContent + ' • Actual: ' + currentTime;
+      }
+
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const allTasks = document.querySelectorAll('.task');
+      const completedTasks = document.querySelectorAll('.task.completed');
+      const importantTasks = document.querySelectorAll('.task.important');
+      const completedImportantTasks = document.querySelectorAll('.task.important.completed');
+
+      document.getElementById('completedCount').textContent =
+        completedTasks.length + ' / ' + allTasks.length;
+
+      document.getElementById('importantCount').textContent =
+        completedImportantTasks.length + ' / ' + importantTasks.length;
+    }
+  </script>
 </body>
 </html>
