@@ -158,6 +158,7 @@
       <h2>Add New Task</h2>
 
       <input type="text" id="taskName" placeholder="Task name">
+      <input type="time" id="plannedTime">
 
       <select id="taskCategory">
         <option value="important">Important Today</option>
@@ -262,6 +263,7 @@
     function addTask() {
       const name = document.getElementById('taskName').value.trim();
       const category = document.getElementById('taskCategory').value;
+      const plannedTime = document.getElementById('plannedTime').value;
 
       if (name === '') {
         alert('Please enter a task name');
@@ -272,7 +274,7 @@
         name: name,
         category: category,
         completed: false,
-        plannedTime: null,
+        plannedTime: plannedTime || null,
         actualTime: null
       });
 
