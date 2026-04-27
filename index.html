@@ -118,9 +118,10 @@
 <body>
   <div class="container">
 
-    <div class="header">
-      <h1>Good Morning, Harshad</h1>
-      <p>Today’s plan • LifeOS</p>
+    <div class="header" style="text-align:center;">
+      <h1 style="margin-bottom:6px;">LifeOS</h1>
+      <p style="margin:0; font-weight:bold;">Good Morning, Harshad</p>
+      <p style="margin-top:4px; color:#666;">Today’s plan</p>
     </div>
 
     <div class="card">
@@ -211,7 +212,10 @@
 
         taskDiv.innerHTML = `
           <div class="task-title">${task.completed ? '✅' : '☐'} ${task.name}</div>
-          <div class="task-meta">Actual: ${task.actualTime || '—'}</div>
+          <div class="task-meta">
+          Planned: ${task.plannedTime || '—'} • 
+          Actual: ${task.actualTime || '—'}
+          </div>
         `;
 
         if (task.category === 'important') {
@@ -268,6 +272,7 @@
         name: name,
         category: category,
         completed: false,
+        plannedTime: null,
         actualTime: null
       });
 
