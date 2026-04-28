@@ -178,7 +178,7 @@
 
     if (savedDate !== today) {
       localStorage.setItem('lifeosDate', today);
-      localStorage.removeItem('lifeosTasks');
+      // localStorage.removeItem('lifeosTasks');
     }
 
     let tasks = JSON.parse(localStorage.getItem('lifeosTasks')) || [
