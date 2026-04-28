@@ -172,6 +172,15 @@
   </div>
 
   <script>
+    
+    let savedDate = localStorage.getItem('lifeosDate');
+    let today = getTodayISO();
+
+    if (savedDate !== today) {
+      localStorage.setItem('lifeosDate', today);
+      localStorage.removeItem('lifeosTasks');
+    }
+
     let tasks = JSON.parse(localStorage.getItem('lifeosTasks')) || [
       { name: 'Workout', category: 'important', completed: false, actualTime: null },
       { name: 'Study CFA', category: 'important', completed: false, actualTime: null },
