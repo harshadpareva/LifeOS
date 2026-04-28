@@ -218,6 +218,7 @@
           Planned: ${task.plannedTime || '—'} • 
           Actual: ${task.actualTime || '—'}
           </div>
+          ${task.completed ? `<div class="task-meta" onclick="editActualTime(event, ${index})">Edit time</div>` : ''}
         `;
 
         if (task.category === 'important') {
