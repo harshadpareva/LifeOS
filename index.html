@@ -288,6 +288,20 @@
       renderTasks();
     }
 
+    function editActualTime(event, index) {
+      event.stopPropagation();
+
+      const newTime = prompt('Enter actual completion time (example: 19:30)');
+
+      if (!newTime) {
+        return;
+      }
+
+      tasks[index].actualTime = newTime;
+      saveTasks();
+      renderTasks();
+    }
+    
     function toggleSection(sectionId) {
       const section = document.getElementById(sectionId);
 
