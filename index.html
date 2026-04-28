@@ -125,17 +125,17 @@
     </div>
 
     <div class="card">
-      <h2>⭐ Important Today</h2>
+      <h2 onclick="toggleSection('importantTasks')" style="cursor:pointer;">⭐ Important Today ˅</h2>
       <div id="importantTasks"></div>
     </div>
 
     <div class="card">
-      <h2>• Daily Flow</h2>
+      <h2 onclick="toggleSection('dailyTasks')" style="cursor:pointer;">• Daily Flow ˅</h2>
       <div id="dailyTasks"></div>
     </div>
 
     <div class="card">
-      <h2>⚪ Small Things</h2>
+      <h2 onclick="toggleSection('smallTasks')" style="cursor:pointer;">⚪ Small Things ˅</h2>
       <div id="smallTasks"></div>
     </div>
 
@@ -287,7 +287,17 @@
       renderTasks();
     }
 
-    renderTasks();
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+
+      if (section.style.display === 'none') {
+         section.style.display = 'block';
+       } else {
+         section.style.display = 'none';
+       }
+    }
+
+      renderTasks();
   </script>
 </body>
 </html>
