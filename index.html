@@ -121,7 +121,7 @@
     <div class="header" style="text-align:center;">
       <h1 style="margin-bottom:6px;">LifeOS</h1>
       <p style="margin:0; font-weight:bold;">Good Morning, Harshad</p>
-      <p style="margin-top:4px; color:#666;">Today’s plan</p>
+      <p style="margin-top:4px; color:#666;">Today’s plan • <span id="todayDate"></span></p>
     </div>
 
     <div class="card">
@@ -312,6 +312,18 @@
        }
     }
 
+    function showTodayDate() {
+      const today = new Date();
+
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+
+      document.getElementById('todayDate').textContent = `${day}/${month}/${year}`;
+    }
+
+    showTodayDate();
+    
       renderTasks();
   </script>
 </body>
