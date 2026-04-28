@@ -177,6 +177,16 @@
     let today = getTodayISO();
 
     if (savedDate !== today) {
+      let oldTasks = JSON.parse(localStorage.getItem('lifeosTasks')) || [];
+
+      oldTasks = oldTasks.map(task => {
+        if (task.status === 'pending') {
+          return { ...task, status: 'missed', completed: false };
+        }
+        return task;
+      });
+
+      localStorage.setItem('lifeosTasks', JSON.stringify(oldTasks));
       localStorage.setItem('lifeosDate', today);
       // localStorage.removeItem('lifeosTasks');
     }
