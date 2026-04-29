@@ -156,7 +156,12 @@
     <div class="button" onclick="showHistory()">View History</div>
 
     <div class="card add-form" id="historyBox">
-      <h2>History</h2>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>History</h2>
+        <span onclick="clearHistory()" style="font-size:12px; color:red; cursor:pointer;">
+          Clear
+        </span>
+      </div>
       <div id="historyContent"></div>
     </div>
     
