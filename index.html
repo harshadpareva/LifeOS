@@ -227,10 +227,7 @@
           taskDiv.classList.add('completed');
         }
 
-        taskDiv.onclick = function() {
-          completeTask(index);
-        };
-
+     
         taskDiv.innerHTML = `
           <div class="task-title">${task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐'} ${task.name}</div>
           <div class="task-meta">
