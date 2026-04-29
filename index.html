@@ -186,6 +186,14 @@
         return task;
       });
 
+      let history = JSON.parse(localStorage.getItem('lifeosHistory')) || [];
+
+      history.push({
+        date: savedDate,
+        tasks: oldTasks
+      });
+
+      localStorage.setItem('lifeosHistory', JSON.stringify(history));
       localStorage.setItem('lifeosTasks', JSON.stringify(oldTasks));
       localStorage.setItem('lifeosDate', today);
       // localStorage.removeItem('lifeosTasks');
