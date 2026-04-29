@@ -323,6 +323,20 @@
       saveTasks();
       renderTasks();
     }
+
+    function deleteTask(event, index) {
+      event.stopPropagation();
+
+      const confirmDelete = confirm('Delete this task?');
+
+      if (!confirmDelete) {
+        return;
+      }
+
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    }
     
     function toggleSection(sectionId) {
       const section = document.getElementById(sectionId);
