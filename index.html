@@ -153,7 +153,13 @@
     </div>
 
     <div class="button" onclick="toggleForm()">+ Add Task</div>
+    <div class="button" onclick="showHistory()">View History</div>
 
+    <div class="card add-form" id="historyBox">
+      <h2>History</h2>
+      <div id="historyContent"></div>
+    </div>
+    
     <div class="card add-form" id="addForm">
       <h2>Add New Task</h2>
 
@@ -346,6 +352,34 @@
       tasks.splice(index, 1);
       saveTasks();
       renderTasks();
+    }
+
+    function showHistory() {
+      const historyBox = document.getElementById('historyBox');
+      const historyContent = document.getElementById('historyContent');
+
+      const history = JSON.parse(localStorage.getItem('lifeosHistory')) || [];
+
+      if (history.length === 0) {
+        historyContent.innerHTML = 'No history yet';
+        return;
+      }
+
+      let html = '';
+
+      history.slice().reverse().forEach(day => {
+        html += `<div style="margin-bottom:10px;">
+          <strong>${day.date}</strong><br/>
+          ${day.tasks.map(task => {
+            const icon = task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐';
+            return `${icon} ${task.name}<br/>`;
+          }).join('')}
+        </div>`;
+      });
+
+      historyContent.innerHTML = html;
+
+      historyBox.style.display = 'block';
     }
     
     function toggleSection(sectionId) {
