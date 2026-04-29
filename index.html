@@ -229,12 +229,17 @@
 
      
         taskDiv.innerHTML = `
-          <div class="task-title">${task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐'} ${task.name}</div>
-          <div class="task-meta">
-          Planned: ${task.plannedTime || '—'} • 
-          Actual: ${task.actualTime || '—'}
+          <div class="task-title">
+            <span onclick="completeTask(${index})" style="cursor:pointer;">
+              ${task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐'}
+            </span>
+            ${task.name}
           </div>
-          ${task.completed ? `<div class="task-meta" onclick="editActualTime(event, ${index})">Edit time</div>` : ''}
+          <div class="task-meta">
+            Planned: ${task.plannedTime || '—'} • 
+            Actual: ${task.actualTime || '—'}
+          </div>
+          ${task.status === 'completed' ? `<div class="task-meta" onclick="editActualTime(event, ${index})">Edit time</div>` : ''}
           <div style="font-size:12px; color:red; cursor:pointer;" onclick="deleteTask(event, ${index})">Delete</div>
         `;
 
