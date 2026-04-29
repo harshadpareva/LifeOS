@@ -416,6 +416,18 @@
       return `${year}-${month}-${day}`;
     }
 
+    function clearHistory() {
+      const confirmClear = confirm('Clear all history?');
+
+      if (!confirmClear) {
+        return;
+      }
+
+      localStorage.removeItem('lifeosHistory');
+
+      document.getElementById('historyContent').innerHTML = 'No history yet';
+    }
+    
     function showTodayDate() {
       const today = new Date();
 
