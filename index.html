@@ -368,12 +368,21 @@
       let html = '';
 
       history.slice().reverse().forEach(day => {
-        html += `<div style="margin-bottom:10px;">
-          <strong>${day.date}</strong><br/>
-          ${day.tasks.map(task => {
-            const icon = task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐';
-            return `${icon} ${task.name}<br/>`;
-          }).join('')}
+        const completed = day.tasks.filter(task => task.status === 'completed').length;
+        const missed = day.tasks.filter(task => task.status === 'missed').length;
+        const total = day.tasks.length;
+
+        html += `<div style="margin-bottom:16px; padding:12px; border:1px solid #eee; border-radius:12px;">
+          <strong>${day.date}</strong>
+          <div style="font-size:13px; color:#666; margin-top:4px;">
+            Completed: ${completed}/${total} • Missed: ${missed}
+          </div>
+          <div style="margin-top:10px;">
+            ${day.tasks.map(task => {
+              const icon = task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐';
+              return `<div style="margin-bottom:5px;">${icon} ${task.name}</div>`;
+            }).join('')}
+          </div>
         </div>`;
       });
 
