@@ -403,6 +403,17 @@
 
       historyBox.style.display = 'block';
     }
+
+    function resetToday() {
+      const confirmReset = confirm('Reset today? This will clear current tasks.');
+
+      if (!confirmReset) {
+        return;
+      }
+
+      localStorage.removeItem('lifeosTasks');
+      renderTasks();
+    }
     
     function toggleSection(sectionId) {
       const section = document.getElementById(sectionId);
