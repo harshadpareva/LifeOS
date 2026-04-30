@@ -150,6 +150,11 @@
         <span>Important Done</span>
         <span id="importantCount">0 / 0</span>
       </div>
+      <br>
+      <div class="summary">
+        <span>Today Score</span>
+        <span id="todayScore">0%</span>
+      </div>
     </div>
 
     <div class="button" onclick="toggleForm()">+ Add Task</div>
@@ -303,10 +308,14 @@
     }
 
     function updateSummary() {
-      const completedTasks = tasks.filter(task => task.completed).length;
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter(task => task.status === 'completed').length;
       const importantTasks = tasks.filter(task => task.category === 'important');
-      const completedImportantTasks = importantTasks.filter(task => task.completed).length;
+      const completedImportantTasks = importantTasks.filter(task => task.status === 'completed').length;
+      const score = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
+      document.getElementById('todayScore').textContent = score + '%';
+      
       document.getElementById('completedCount').textContent =
         completedTasks + ' / ' + tasks.length;
 
