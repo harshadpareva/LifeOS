@@ -310,6 +310,7 @@
       const name = document.getElementById('taskName').value.trim();
       const category = document.getElementById('taskCategory').value;
       const plannedTime = document.getElementById('plannedTime').value;
+      const repeatDaily = document.getElementById('repeatDaily').checked;
 
       if (name === '') {
         alert('Please enter a task name');
@@ -322,7 +323,8 @@
         status: 'pending',
         completed: false,
         plannedTime: plannedTime || null,
-        actualTime: null
+        actualTime: null,
+        repeatDaily: repeatDaily,
       });
 
       document.getElementById('taskName').value = '';
