@@ -348,6 +348,20 @@
       renderTasks();
     }
 
+    function editPlannedTime(event, index) {
+      event.stopPropagation();
+
+      const newTime = prompt('Enter planned time (example: 19:30)');
+
+      if (!newTime) {
+        return;
+      }
+
+      tasks[index].plannedTime = newTime;
+      saveTasks();
+      renderTasks();
+    }
+    
     function editActualTime(event, index) {
       event.stopPropagation();
 
