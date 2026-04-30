@@ -211,16 +211,7 @@
       // localStorage.removeItem('lifeosTasks');
     }
 
-    let tasks = JSON.parse(localStorage.getItem('lifeosTasks')) || [
-      { name: 'Workout', category: 'important', status: 'pending', completed: false, plannedTime: null, actualTime: null },
-      { name: 'Study CFA', category: 'important',status: 'pending', completed: false, plannedTime: null, actualTime: null },
-      { name: 'Wake up', category: 'daily',status: 'pending', completed: false, plannedTime: null, actualTime: null },
-      { name: 'Get ready', category: 'daily',status: 'pending', completed: false, plannedTime: null, actualTime: null },
-      { name: 'Prayer', category: 'daily',status: 'pending', completed: false, plannedTime: null, actualTime: null },
-      { name: 'Perfume', category: 'small',status: 'pending', completed: false, plannedTime: null, actualTime: null },
-      { name: 'Sunscreen', category: 'small',status: 'pending', completed: false, plannedTime: null, actualTime: null },
-      { name: 'Mint / Chewing gum', category: 'small',status: 'pending', completed: false, plannedTime: null, actualTime: null }
-    ];
+    let tasks = JSON.parse(localStorage.getItem('lifeosTasks')) || [];
 
     function saveTasks() {
       localStorage.setItem('lifeosTasks', JSON.stringify(tasks));
