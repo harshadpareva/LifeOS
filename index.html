@@ -351,7 +351,7 @@
     function editPlannedTime(event, index) {
       event.stopPropagation();
 
-      const newTime = prompt('Enter planned time (example: 19:30)');
+      const newTime = prompt('Enter planned time (24h format HH:MM, e.g. 19:30)');
 
       if (!newTime) {
         return;
