@@ -263,7 +263,7 @@
             <span onclick="completeTask(${index})" style="cursor:pointer;">
               ${task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐'}
             </span>
-            ${task.name}
+            ${task.name} ${task.repeatDaily ? '🔁' : ''}
           </div>
           <div class="task-meta">
             Planned: ${task.plannedTime || '—'} • 
