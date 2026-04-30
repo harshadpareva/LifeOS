@@ -210,7 +210,19 @@
       });
 
       localStorage.setItem('lifeosHistory', JSON.stringify(history));
-      localStorage.setItem('lifeosTasks', JSON.stringify(oldTasks));
+      const todayTasks = oldTasks
+        .filter(task => task.repeatDaily)
+        .map(task => ({
+          name: task.name,
+          category: task.category,
+          status: 'pending',
+          completed: false,
+          plannedTime: task.plannedTime || null,
+          actualTime: null,
+          repeatDaily: true
+      }));
+
+      localStorage.setItem('lifeosTasks', JSON.stringify(todayTasks));
       localStorage.setItem('lifeosDate', today);
       // localStorage.removeItem('lifeosTasks');
     }
