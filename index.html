@@ -112,6 +112,12 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    .secondary-button {
+      background: white;
+      color: #111;
+      border: 1px solid #ddd;
+    }
   </style>
 </head>
 
@@ -224,8 +230,8 @@
       <button class="save-button" onclick="addTask()">Save Task</button>
     </div>
     
-    <div class="button" onclick="showHistory()">View History</div>
-    <div class="button" onclick="resetToday()">Reset Today</div>
+    <div class="button secondary-button" onclick="showHistory()">View History</div>
+    <div class="button secondary-button" onclick="resetToday()">Reset Today</div>
 
     <div class="card add-form" id="historyBox">
       <div style="display:flex; justify-content:space-between; align-items:center;">
