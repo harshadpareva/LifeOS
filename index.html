@@ -464,6 +464,8 @@
       document.getElementById('taskName').value = '';
       document.getElementById('taskCategory').value = 'important';
       document.getElementById('addForm').style.display = 'none';
+      document.getElementById('plannedTime').value = '';
+      document.getElementById('repeatDaily').checked = false;
 
       saveTasks();
       renderTasks();
