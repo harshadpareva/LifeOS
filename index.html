@@ -346,6 +346,35 @@
         completedImportantTasks + ' / ' + importantTasks.length;
     }
 
+    function updateWeeklySummary() {
+      const history = JSON.parse(localStorage.getItem('lifeosHistory')) || [];
+
+      const last7Days = history.slice(-7);
+
+      const daysTracked = last7Days.length;
+
+      let totalScore = 0;
+      let totalMissed = 0;
+
+      last7Days.forEach(day => {
+        const tasks = day.tasks || [];
+
+        const completed = tasks.filter(t => t.status === 'completed').length;
+        const missed = tasks.filter(t => t.status === 'missed').length;
+
+        const score = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
+
+        totalScore += score;
+        totalMissed += missed;
+      });
+
+      const avgScore = daysTracked === 0 ? 0 : Math.round(totalScore / daysTracked);
+
+      document.getElementById('weeklyDays').textContent = daysTracked;
+      document.getElementById('weeklyAverage').textContent = avgScore + '%';
+      document.getElementById('weeklyMissed').textContent = totalMissed;
+    }
+    
     function toggleForm() {
       const form = document.getElementById('addForm');
       form.style.display = form.style.display === 'block' ? 'none' : 'block';
