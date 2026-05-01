@@ -218,18 +218,20 @@
     <div class="card add-form" id="addForm">
       <h2>Add New Task</h2>
 
-      <input type="text" id="taskName" placeholder="Task name">
-      <input type="time" id="plannedTime">
+      <input type="text" id="taskName" placeholder="Task name" style="margin-bottom:10px;">
 
-      <label style="font-size:14px;">
-        <input type="checkbox" id="repeatDaily"> Repeat daily
-      </label>
-
-      <select id="taskCategory">
+      <select id="taskCategory" style="margin-bottom:10px;">
         <option value="important">Important Today</option>
         <option value="daily">Daily Flow</option>
         <option value="small">Small Things</option>
       </select>
+
+      <input type="time" id="plannedTime" style="margin-bottom:10px;">
+
+      <label style="font-size:14px; display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="repeatDaily">
+        Repeat daily
+      </label>
 
       <button class="save-button" onclick="addTask()">Save Task</button>
     </div>
