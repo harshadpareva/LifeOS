@@ -202,18 +202,6 @@
     </div>
     
     <div class="button" onclick="toggleForm()">+ Add Task</div>
-    <div class="button" onclick="showHistory()">View History</div>
-    <div class="button" onclick="resetToday()">Reset Today</div>
-
-    <div class="card add-form" id="historyBox">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2>History</h2>
-        <span onclick="clearHistory()" style="font-size:12px; color:red; cursor:pointer;">
-          Clear
-        </span>
-      </div>
-      <div id="historyContent"></div>
-    </div>
     
     <div class="card add-form" id="addForm">
       <h2>Add New Task</h2>
@@ -235,6 +223,21 @@
 
       <button class="save-button" onclick="addTask()">Save Task</button>
     </div>
+    
+    <div class="button" onclick="showHistory()">View History</div>
+    <div class="button" onclick="resetToday()">Reset Today</div>
+
+    <div class="card add-form" id="historyBox">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>History</h2>
+        <span onclick="clearHistory()" style="font-size:12px; color:red; cursor:pointer;">
+          Clear
+        </span>
+      </div>
+      <div id="historyContent"></div>
+    </div>
+    
+    
 
   </div>
 
@@ -522,6 +525,10 @@
     function showHistory() {
       const historyBox = document.getElementById('historyBox');
       const historyContent = document.getElementById('historyContent');
+      if (historyBox.style.display === 'block') {
+        historyBox.style.display = 'none';
+        return;
+      }
 
       const history = JSON.parse(localStorage.getItem('lifeosHistory')) || [];
 
