@@ -462,12 +462,21 @@
         const tasks = day.tasks || [];
         const completed = tasks.filter(t => t.status === 'completed').length;
         const score = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
+        
+        let barColor = '#111';
 
+        if (score < 50) {
+          barColor = 'red';
+        } else if (score <= 70) {
+          barColor = 'orange';
+        } else {
+          barColor = 'green';
+        }
         chartHtml += `
           <div style="margin-bottom:10px;">
             <div style="font-size:12px; margin-bottom:4px;">${day.date} — ${score}%</div>
             <div style="background:#eee; border-radius:8px; overflow:hidden;">
-              <div style="width:${score}%; background:#111; color:white; padding:4px; font-size:11px;">
+              <div style="width:${score}%; background:${barColor}; color:white; padding:4px; font-size:11px;">
                 ${score}%
               </div>
             </div>
