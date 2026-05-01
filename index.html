@@ -455,6 +455,27 @@
       document.getElementById('weeklyBest').textContent = daysTracked === 0 ? '0%' : bestScore + '%';
       document.getElementById('weeklyWorst').textContent = daysTracked === 0 ? '0%' : worstScore + '%';
       document.getElementById('weeklyStreak').textContent = streak + ' days';
+
+      let chartHtml = '';
+
+      last7Days.forEach(day => {
+        const tasks = day.tasks || [];
+        const completed = tasks.filter(t => t.status === 'completed').length;
+        const score = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
+
+        chartHtml += `
+          <div style="margin-bottom:10px;">
+            <div style="font-size:12px; margin-bottom:4px;">${day.date} — ${score}%</div>
+            <div style="background:#eee; border-radius:8px; overflow:hidden;">
+              <div style="width:${score}%; background:#111; color:white; padding:4px; font-size:11px;">
+                ${score}%
+              </div>
+            </div>
+          </div>
+  `      ;
+      });
+
+      document.getElementById('weeklyChart').innerHTML = chartHtml;
     }
     
     function toggleForm() {
