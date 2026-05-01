@@ -370,6 +370,8 @@
 
       let totalScore = 0;
       let totalMissed = 0;
+      let bestScore = 0;
+      let worstScore = 100;
 
       last7Days.forEach(day => {
         const tasks = day.tasks || [];
@@ -380,6 +382,13 @@
         const score = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
 
         totalScore += score;
+        if (score > bestScore) {
+          bestScore = score;
+        }
+
+        if (score < worstScore) {
+          worstScore = score;
+        }
         totalMissed += missed;
       });
 
@@ -388,6 +397,8 @@
       document.getElementById('weeklyDays').textContent = daysTracked;
       document.getElementById('weeklyAverage').textContent = avgScore + '%';
       document.getElementById('weeklyMissed').textContent = totalMissed;
+      document.getElementById('weeklyBest').textContent = daysTracked === 0 ? '0%' : bestScore + '%';
+      document.getElementById('weeklyWorst').textContent = daysTracked === 0 ? '0%' : worstScore + '%';
     }
     
     function toggleForm() {
