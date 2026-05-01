@@ -474,7 +474,9 @@
         }
         chartHtml += `
           <div style="margin-bottom:10px;">
-            <div style="font-size:12px; margin-bottom:4px;">${day.date} — ${score}%</div>
+            <div style="font-size:12px; margin-bottom:4px;">
+              ${day.date.split('-').reverse().slice(0,2).join('/')} — ${score}%
+            </div>
             <div style="background:#eee; border-radius:8px; overflow:hidden;">
               <div style="width:${score}%; background:${barColor}; color:white; padding:4px; font-size:11px;">
                 ${score}%
