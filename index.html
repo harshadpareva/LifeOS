@@ -218,7 +218,7 @@
     <div class="card add-form" id="addForm">
       <h2>Add New Task</h2>
 
-      <input type="text" id="taskName" placeholder="Task name" style="margin-bottom:10px;">
+      <input type="text" id="taskName" placeholder="Task name" style="margin-bottom:10px;" onkeydown="handleTaskEnter(event)">
 
       <select id="taskCategory" style="margin-bottom:10px;">
         <option value="important">Important Today</option>
@@ -354,6 +354,12 @@
       renderTasks();
     }
 
+    function handleTaskEnter(event) {
+      if (event.key === 'Enter') {
+        addTask();
+      }
+    }
+    
     function updateSummary() {
       const totalTasks = tasks.length;
       const completedTasks = tasks.filter(task => task.status === 'completed').length;
