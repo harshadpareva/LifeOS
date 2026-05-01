@@ -359,7 +359,17 @@
       const completedImportantTasks = importantTasks.filter(task => task.status === 'completed').length;
       const score = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
-      document.getElementById('todayScore').textContent = score + '%';
+      const scoreElement = document.getElementById('todayScore');
+
+      scoreElement.textContent = score + '%';
+
+      if (score < 50) {
+        scoreElement.style.color = 'red';
+      } else if (score <= 70) {
+        scoreElement.style.color = 'orange';
+      } else {
+        scoreElement.style.color = 'green';
+      }
       
       document.getElementById('completedCount').textContent =
         completedTasks + ' / ' + tasks.length;
