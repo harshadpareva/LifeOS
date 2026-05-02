@@ -234,6 +234,8 @@
         <option value="small">Small Things</option>
       </select>
 
+      <label style="font-size:13px; color:#666;">Task date</label>
+      <input type="date" id="taskDate" style="margin-bottom:10px;"> 
       <input type="time" id="plannedTime" style="margin-bottom:10px;">
 
       <label style="font-size:14px; display:flex; align-items:center; gap:10px; margin-bottom:14px;">
@@ -546,6 +548,7 @@
       const category = document.getElementById('taskCategory').value;
       const plannedTime = document.getElementById('plannedTime').value;
       const repeatDaily = document.getElementById('repeatDaily').checked;
+      const taskDate = document.getElementById('taskDate').value || getTodayISO();
 
       if (name === '') {
         alert('Please enter a task name');
@@ -560,7 +563,7 @@
         plannedTime: plannedTime || null,
         actualTime: null,
         repeatDaily: repeatDaily,
-        date: getTodayISO()
+        date: taskDate
       };
 
       tasks.push(newTask);
@@ -706,6 +709,8 @@
         return;
       }
 
+      document.getElementById('taskDate').value = '';
+      
       tasks = [];
       renderTasks();
     }
