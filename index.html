@@ -79,17 +79,16 @@
 
     .button {
       display: block;
+      width: 100%;
       text-align: center;
       background: #111;
       color: white;
       padding: 16px;
       border-radius: 16px;
-      text-decoration: none;
       font-weight: bold;
-      width: 100%;
-      margin-top: 20px;
-      margin-bottom: 10px;
+      margin: 10px 0;
       cursor: pointer;
+      box-sizing: border-box;
     }
 
     .add-form {
@@ -216,7 +215,7 @@
       <div>
         <strong>Weekly Score Chart</strong>
         <div style="overflow-x:auto;">
-          <div id="weeklyChart"></div>
+          <div id="weeklyChart" style="margin-top:10px; width:100%; overflow-x:auto;"></div>
         </div>
       </div>
     </div>
