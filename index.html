@@ -525,7 +525,7 @@
         return;
       }
 
-      tasks.push({
+      const newTask = {
         name: name,
         category: category,
         status: 'pending',
@@ -533,7 +533,11 @@
         plannedTime: plannedTime || null,
         actualTime: null,
         repeatDaily: repeatDaily,
-      });
+        date: getTodayISO()
+      };
+
+      tasks.push(newTask);
+      saveTaskToSupabase(newTask);
 
       document.getElementById('taskName').value = '';
       document.getElementById('taskCategory').value = 'important';
@@ -670,6 +674,16 @@
       localStorage.removeItem('lifeosHistory');
 
       document.getElementById('historyContent').innerHTML = 'No history yet';
+    }
+    
+    async function saveTaskToSupabase(task) {
+      const { data, error } = await db.from('tasks').insert([task]);
+
+      if (error) {
+        console.log('Supabase save error:', error);
+      } else {
+        console.log('Task saved to Supabase:', data);
+      }
     }
     
     function showTodayDate() {
