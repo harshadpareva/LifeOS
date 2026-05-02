@@ -389,8 +389,8 @@
       updateWeeklySummary();
     }
 
-    function completeTask(index) {
-      if (tasks[index].completed) {
+    async function completeTask(index) {
+      if (tasks[index].status === 'completed') {
         return;
       }
 
@@ -398,7 +398,19 @@
       tasks[index].completed = true;
       tasks[index].actualTime = getCurrentTime();
 
-      saveTasks();
+      const { error } = await db
+        .from('tasks')
+        .update({
+          status: 'completed',
+          completed: true,
+          actualTime: tasks[index].actualTime
+        })
+        .eq('id', tasks[index].id);
+
+      if (error) {
+        console.log('Complete task error:', error);
+      }
+
       renderTasks();
     }
 
