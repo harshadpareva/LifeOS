@@ -601,7 +601,7 @@
       renderTasks();
     }
 
-    function deleteTask(event, index) {
+    async function deleteTask(event, index) {
       event.stopPropagation();
 
       const confirmDelete = confirm('Delete this task?');
@@ -610,8 +610,17 @@
         return;
       }
 
+      const { error } = await db
+        .from('tasks')
+        .delete()
+        .eq('id', tasks[index].id);
+
+      if (error) {
+        console.log('Delete task error:', error);
+        return;
+      }
+
       tasks.splice(index, 1);
-      saveTasks();
       renderTasks();
     }
 
