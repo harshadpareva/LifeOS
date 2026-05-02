@@ -317,7 +317,10 @@
     let tasks = [];
 
     async function loadTasksFromSupabase() {
-      const { data, error } = await db.from('tasks').select('*');
+      const { data, error } = await db
+        .from('tasks')
+        .select('*')
+        .eq('date', getTodayISO());
 
       if (error) {
         console.log('Load error:', error);
