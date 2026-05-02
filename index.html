@@ -773,7 +773,7 @@
       upcomingBox.innerHTML = data.map(task => `
         <div class="task">
           <div class="task-title">${task.name}</div>
-          <div class="task-meta">Date: ${task.date} • Planned: ${task.plannedTime || '—'}</div>
+          <div class="task-meta">Date: ${task.date.split('-').reverse().join('/')} • Planned: ${task.plannedTime || '—'}</div>
         </div>
       `).join('');
     }
