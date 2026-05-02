@@ -750,6 +750,33 @@
 
       document.getElementById('historyContent').innerHTML = 'No history yet';
     }
+
+    async function loadUpcomingTasks() {
+      const { data, error } = await db
+        .from('tasks')
+        .select('*')
+        .gt('date', getTodayISO())
+        .order('date', { ascending: true });
+
+      if (error) {
+        console.log('Upcoming load error:', error);
+        return;
+      }
+
+      const upcomingBox = document.getElementById('upcomingTasks');
+
+      if (!data || data.length === 0) {
+        upcomingBox.innerHTML = '<div class="task-meta">No upcoming tasks</div>';
+        return;
+      }
+
+      upcomingBox.innerHTML = data.map(task => `
+        <div class="task">
+          <div class="task-title">${task.name}</div>
+          <div class="task-meta">Date: ${task.date} • Planned: ${task.plannedTime || '—'}</div>
+        </div>
+      `).join('');
+    }
     
     async function saveTaskToSupabase(task) {
       const { data, error } = await db.from('tasks').insert([task]);
@@ -774,6 +801,7 @@
     showTodayDate();
     
       loadTasksFromSupabase();
+      loadUpcomingTasks();
   </script>
 </body>
 </html>
