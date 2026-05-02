@@ -3,6 +3,7 @@
 <head>
   <title>LifeOS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
       margin: 0;
@@ -261,6 +262,11 @@
   </div>
 
   <script>
+
+    const supabaseUrl = 'https://fkpwxknsnfczcwxmoait.supabase.co';
+    const supabaseKey = 'sb_publishable_t8BL-oh1pynf1MPDVDzZ-w_A7in2J7a';
+
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
     
     let savedDate = localStorage.getItem('lifeosDate');
     let today = getTodayISO();
