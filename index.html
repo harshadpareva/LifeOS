@@ -271,6 +271,15 @@
     let savedDate = localStorage.getItem('lifeosDate');
     let today = getTodayISO();
 
+    async function testSupabase() {
+      const { data, error } = await supabase.from('tasks').select('*');
+
+      console.log('DATA:', data);
+      console.log('ERROR:', error);
+    }
+
+    testSupabase();
+    
     if (savedDate !== today) {
       let oldTasks = JSON.parse(localStorage.getItem('lifeosTasks')) || [];
 
