@@ -314,7 +314,19 @@
       // localStorage.removeItem('lifeosTasks');
     }
 
-    let tasks = JSON.parse(localStorage.getItem('lifeosTasks')) || [];
+    let tasks = [];
+
+    async function loadTasksFromSupabase() {
+      const { data, error } = await db.from('tasks').select('*');
+
+      if (error) {
+        console.log('Load error:', error);
+        return;
+      }
+
+      tasks = data || [];
+      renderTasks();
+    }
 
     function saveTasks() {
       localStorage.setItem('lifeosTasks', JSON.stringify(tasks));
@@ -698,7 +710,7 @@
 
     showTodayDate();
     
-      renderTasks();
+      loadTasksFromSupabase();
   </script>
 </body>
 </html>
