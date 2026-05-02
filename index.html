@@ -597,7 +597,7 @@
       renderTasks();
     }
     
-    function editActualTime(event, index) {
+    async function editActualTime(event, index) {
       event.stopPropagation();
 
       const newTime = prompt('Enter actual completion time (example: 19:30)');
@@ -607,7 +607,17 @@
       }
 
       tasks[index].actualTime = newTime;
-      saveTasks();
+
+      const { error } = await db
+        .from('tasks')
+        .update({ actualTime: newTime })
+        .eq('id', tasks[index].id);
+
+      if (error) {
+        console.log('Edit actual time error:', error);
+        return;
+      }
+
       renderTasks();
     }
 
