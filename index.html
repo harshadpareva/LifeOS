@@ -574,6 +574,7 @@
       document.getElementById('addForm').style.display = 'none';
       document.getElementById('plannedTime').value = '';
       document.getElementById('repeatDaily').checked = false;
+      document.getElementById('taskDate').value = '';
 
       saveTasks();
       renderTasks();
@@ -708,9 +709,7 @@
         console.log('Reset today error:', error);
         return;
       }
-
-      document.getElementById('taskDate').value = '';
-      
+           
       tasks = [];
       renderTasks();
     }
