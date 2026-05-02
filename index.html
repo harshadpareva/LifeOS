@@ -686,14 +686,24 @@
       historyBox.style.display = 'block';
     }
 
-    function resetToday() {
+    async function resetToday() {
       const confirmReset = confirm('Reset today? This will clear current tasks.');
 
       if (!confirmReset) {
         return;
       }
 
-      localStorage.removeItem('lifeosTasks');
+      const { error } = await db
+        .from('tasks')
+        .delete()
+        .eq('date', getTodayISO());
+
+      if (error) {
+        console.log('Reset today error:', error);
+        return;
+      }
+
+      tasks = [];
       renderTasks();
     }
     
