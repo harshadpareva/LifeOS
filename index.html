@@ -573,7 +573,7 @@
       renderTasks();
     }
 
-    function editPlannedTime(event, index) {
+    async function editPlannedTime(event, index) {
       event.stopPropagation();
 
       const newTime = prompt('Enter planned time (24h format HH:MM, e.g. 19:30)');
@@ -583,7 +583,17 @@
       }
 
       tasks[index].plannedTime = newTime;
-      saveTasks();
+
+      const { error } = await db
+        .from('tasks')
+        .update({ plannedTime: newTime })
+        .eq('id', tasks[index].id);
+
+      if (error) {
+        console.log('Edit planned time error:', error);
+        return;
+      }
+
       renderTasks();
     }
     
