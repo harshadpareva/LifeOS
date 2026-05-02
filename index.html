@@ -265,14 +265,13 @@
 
     const supabaseUrl = 'https://fkpwxknsnfczcwxmoait.supabase.co';
     const supabaseKey = 'sb_publishable_t8BL-oh1pynf1MPDVDzZ-w_A7in2J7a';
-
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
     
     let savedDate = localStorage.getItem('lifeosDate');
     let today = getTodayISO();
 
     async function testSupabase() {
-      const { data, error } = await supabase.from('tasks').select('*');
+      const { data, error } = await db.from('tasks').select('*');
 
       console.log('DATA:', data);
       console.log('ERROR:', error);
