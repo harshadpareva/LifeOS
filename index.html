@@ -243,10 +243,11 @@
       <input type="date" id="taskDate" style="margin-bottom:10px;"> 
       <input type="time" id="plannedTime" style="margin-bottom:10px;">
 
-      <label style="font-size:14px; display:flex; align-items:center; gap:10px; margin-bottom:14px;">
-        <input type="checkbox" id="repeatDaily" style="width:auto; margin:0;">
-        <span>Repeat daily</span>
-      </label>
+      <label style="font-size:13px; color:#666;">Frequency</label>
+      <select id="taskFrequency" style="margin-bottom:10px;">
+        <option value="once">One-time</option>
+        <option value="daily">Daily</option>
+      </select>
 
       <button class="save-button" onclick="addTask()">Save Task</button>
     </div>
