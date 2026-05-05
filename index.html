@@ -596,7 +596,7 @@
       form.style.display = form.style.display === 'block' ? 'none' : 'block';
     }
 
-    function addTask() {
+    async function addTask() {
       const name = document.getElementById('taskName').value.trim();
       const category = document.getElementById('taskCategory').value;
       const plannedTime = document.getElementById('plannedTime').value;
@@ -621,9 +621,14 @@
         date: taskDate
       };
 
-      tasks.push(newTask);
-      saveTaskToSupabase(newTask);
+      const savedTask = await saveTaskToSupabase(newTask);
 
+      if (savedTask) {
+        tasks.push(savedTask);
+      } else {
+        tasks.push(newTask);
+      }
+      
       document.getElementById('taskName').value = '';
       document.getElementById('taskCategory').value = 'important';
       document.getElementById('addForm').style.display = 'none';
@@ -842,13 +847,19 @@
     }
     
     async function saveTaskToSupabase(task) {
-      const { data, error } = await db.from('tasks').insert([task]);
+      const { data, error } = await db
+        .from('tasks')
+        .insert([task])
+        .select()
+        .single();
 
       if (error) {
         console.log('Supabase save error:', error);
-      } else {
-        console.log('Task saved to Supabase:', data);
+        return null;
       }
+
+      console.log('Task saved to Supabase:', data);
+      return data;
     }
     
     function showTodayDate() {
