@@ -327,7 +327,7 @@
       const { data, error } = await db
         .from('tasks')
         .select('*')
-        .or(`plannedDate.eq.${getTodayISO()},completedDate.eq.${getTodayISO()}`)
+        .or(`plannedDate.eq.${getTodayISO()},completedDate.eq.${getTodayISO()},repeatDaily.eq.true`);
 
       if (error) {
         console.log('Load error:', error);
