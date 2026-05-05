@@ -407,13 +407,15 @@
       tasks[index].status = 'completed';
       tasks[index].completed = true;
       tasks[index].actualTime = getCurrentTime();
+      tasks[index].completedDate = getTodayISO();
 
       const { error } = await db
         .from('tasks')
         .update({
           status: 'completed',
           completed: true,
-          actualTime: tasks[index].actualTime
+          actualTime: tasks[index].actualTime,
+          completedDate: getTodayISO()
         })
         .eq('id', tasks[index].id);
 
@@ -432,7 +434,7 @@
     
     function updateSummary() {
       const totalTasks = tasks.length;
-      const completedTasks = tasks.filter(task => task.status === 'completed').length;
+      const completedTasks = tasks.filter(task => task.completedDate === getTodayISO()).length;
       const importantTasks = tasks.filter(task => task.category === 'important');
       const completedImportantTasks = importantTasks.filter(task => task.status === 'completed').length;
       const score = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
