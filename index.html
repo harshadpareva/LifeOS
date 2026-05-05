@@ -503,9 +503,18 @@
         completedImportantTasks + ' / ' + importantTasks.length;
     }
 
-    function updateWeeklySummary() {
-      const history = JSON.parse(localStorage.getItem('lifeosHistory')) || [];
+    async function updateWeeklySummary() {
+      const { data, error } = await db
+        .from('history')
+        .select('*')
+        .order('date', { ascending: true });
 
+      if (error) {
+        console.log('Weekly history load error:', error);
+        return;
+      }
+
+      const history = data || [];
       const last7Days = history.slice(-7);
 
       const daysTracked = last7Days.length;
@@ -517,16 +526,16 @@
       let streak = 0;
 
       last7Days.forEach(day => {
-        const tasks = day.tasks || [];
+        const dayTasks = day.tasks || [];
 
-        const completed = tasks.filter(t => t.status === 'completed').length;
-        const missed = tasks.filter(t => t.status === 'missed').length;
+        const completed = dayTasks.filter(t => t.status === 'completed').length;
+        const missed = dayTasks.filter(t => t.status === 'missed').length;
 
-        const score = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
+        const score = dayTasks.length === 0 ? 0 : Math.round((completed / dayTasks.length) * 100);
 
         totalScore += score;
         totalMissed += missed;
-        
+
         if (score > bestScore) {
           bestScore = score;
         }
@@ -537,9 +546,9 @@
       });
 
       for (let i = last7Days.length - 1; i >= 0; i--) {
-        const tasks = last7Days[i].tasks || [];
-        const completed = tasks.filter(t => t.status === 'completed').length;
-        const score = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
+        const dayTasks = last7Days[i].tasks || [];
+        const completed = dayTasks.filter(t => t.status === 'completed').length;
+        const score = dayTasks.length === 0 ? 0 : Math.round((completed / dayTasks.length) * 100);
 
         if (score >= 70) {
           streak++;
@@ -547,7 +556,7 @@
           break;
         }
       }
-      
+
       const avgScore = daysTracked === 0 ? 0 : Math.round(totalScore / daysTracked);
 
       document.getElementById('weeklyDays').textContent = daysTracked;
@@ -560,10 +569,10 @@
       let chartHtml = '';
 
       last7Days.forEach(day => {
-        const tasks = day.tasks || [];
-        const completed = tasks.filter(t => t.status === 'completed').length;
-        const score = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
-        
+        const dayTasks = day.tasks || [];
+        const completed = dayTasks.filter(t => t.status === 'completed').length;
+        const score = dayTasks.length === 0 ? 0 : Math.round((completed / dayTasks.length) * 100);
+
         let barColor = '#111';
 
         if (score < 50) {
@@ -573,6 +582,7 @@
         } else {
           barColor = 'green';
         }
+
         chartHtml += `
           <div style="margin-bottom:10px;">
             <div style="font-size:12px; margin-bottom:4px;">
@@ -584,7 +594,7 @@
               </div>
             </div>
           </div>
-  `      ;
+        `;
       });
 
       document.getElementById('weeklyChart').innerHTML = chartHtml;
@@ -705,15 +715,28 @@
       renderTasks();
     }
 
-    function showHistory() {
+    async function showHistory() {
       const historyBox = document.getElementById('historyBox');
       const historyContent = document.getElementById('historyContent');
+
       if (historyBox.style.display === 'block') {
         historyBox.style.display = 'none';
         return;
       }
 
-      const history = JSON.parse(localStorage.getItem('lifeosHistory')) || [];
+      const { data, error } = await db
+        .from('history')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (error) {
+        console.log('History load error:', error);
+        historyContent.innerHTML = 'Could not load history';
+        historyBox.style.display = 'block';
+        return;
+      }
+
+      const history = data || [];
 
       if (history.length === 0) {
         historyContent.innerHTML = 'No history yet';
@@ -723,10 +746,11 @@
 
       let html = '';
 
-      history.slice().reverse().forEach(day => {
-        const completed = day.tasks.filter(task => task.status === 'completed').length;
-        const missed = day.tasks.filter(task => task.status === 'missed').length;
-        const total = day.tasks.length;
+      history.forEach(day => {
+        const dayTasks = day.tasks || [];
+        const completed = dayTasks.filter(task => task.status === 'completed').length;
+        const missed = dayTasks.filter(task => task.status === 'missed').length;
+        const total = dayTasks.length;
 
         html += `<div style="margin-bottom:16px; padding:12px; border:1px solid #eee; border-radius:12px;">
           <strong>${day.date}</strong>
@@ -734,7 +758,7 @@
             Completed: ${completed}/${total} • Missed: ${missed}
           </div>
           <div style="margin-top:10px;">
-            ${day.tasks.map(task => {
+            ${dayTasks.map(task => {
               const icon = task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐';
               return `<div style="margin-bottom:5px;">${icon} ${task.name}</div>`;
             }).join('')}
@@ -743,10 +767,9 @@
       });
 
       historyContent.innerHTML = html;
-
       historyBox.style.display = 'block';
     }
-
+    
     async function resetToday() {
       const confirmReset = confirm('Reset today? This will clear current tasks.');
 
@@ -851,7 +874,7 @@
     
       loadTasksFromSupabase();
       loadUpcomingTasks();
-      loadHistory();
+      
   </script>
 </body>
 </html>
