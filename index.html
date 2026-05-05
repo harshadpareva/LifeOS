@@ -304,6 +304,7 @@
       });
 
       localStorage.setItem('lifeosHistory', JSON.stringify(history));
+      saveHistoryToSupabase(savedDate, oldTasks);
       const todayTasks = oldTasks
         .filter(task => task.repeatDaily)
         .map(task => ({
@@ -338,6 +339,23 @@
       renderTasks();
     }
 
+    async function saveHistoryToSupabase(date, tasks) {
+      if (!date || !tasks || tasks.length === 0) {
+        return;
+      }
+
+      const { error } = await db.from('history').insert([
+        {
+          date: date,
+          tasks: tasks
+        }
+      ]);
+
+      if (error) {
+        console.log('History save error:', error);
+      }
+    }
+    
     function saveTasks() {
       localStorage.setItem('lifeosTasks', JSON.stringify(tasks));
     }
