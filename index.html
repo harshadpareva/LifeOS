@@ -329,11 +329,7 @@
         }).join('');
       }
 
-      history.push({
-        date: savedDate,
-        tasks: oldTasks
-      });
-
+      
       localStorage.setItem('lifeosHistory', JSON.stringify(history));
       saveHistoryToSupabase(savedDate, oldTasks);
       const todayTasks = oldTasks
