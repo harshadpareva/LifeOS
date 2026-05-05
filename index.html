@@ -307,14 +307,14 @@
           return;
         }
 
-        const historyContainer = document.getElementById('historyContainer');
+        const historyContent = document.getElementById('historyContent');
 
         if (!data || data.length === 0) {
-          historyContainer.innerHTML = '<div>No history yet</div>';
+          historyContent.innerHTML = '<div>No history yet</div>';
           return;
         }
 
-        historyContainer.innerHTML = data.map(day => {
+        historyContent.innerHTML = data.map(day => {
           const completed = (day.tasks || []).filter(t => t.status === 'completed').length;
           const total = (day.tasks || []).length;
           const score = total === 0 ? 0 : Math.round((completed / total) * 100);
