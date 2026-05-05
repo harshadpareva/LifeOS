@@ -434,7 +434,7 @@
     
     function updateSummary() {
       const totalTasks = tasks.length;
-      const completedTasks = tasks.filter(task => task.completedDate === getTodayISO()).length;
+      const completedTasks = tasks.filter(task => task.status === 'completed').length;
       const importantTasks = tasks.filter(task => task.category === 'important');
       const completedImportantTasks = importantTasks.filter(task => task.status === 'completed').length;
       const score = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
