@@ -327,7 +327,7 @@
       const { data, error } = await db
         .from('tasks')
         .select('*')
-        .eq('date', getTodayISO());
+        .or(`plannedDate.eq.${getTodayISO()},completedDate.eq.${getTodayISO()}`)
 
       if (error) {
         console.log('Load error:', error);
