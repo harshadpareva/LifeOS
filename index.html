@@ -296,7 +296,38 @@
         return task;
       });
 
-      let history = JSON.parse(localStorage.getItem('lifeosHistory')) || [];
+      async function loadHistory() {
+        const { data, error } = await db
+          .from('history')
+          .select('*')
+          .order('date', { ascending: false });
+
+        if (error) {
+          console.log('History load error:', error);
+          return;
+        }
+
+        const historyContainer = document.getElementById('historyContainer');
+
+        if (!data || data.length === 0) {
+          historyContainer.innerHTML = '<div>No history yet</div>';
+          return;
+        }
+
+        historyContainer.innerHTML = data.map(day => {
+          const completed = (day.tasks || []).filter(t => t.status === 'completed').length;
+          const total = (day.tasks || []).length;
+          const score = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+          return `
+            <div class="history-day">
+              <strong>${day.date}</strong>
+              <div>Completed: ${completed}/${total}</div>
+              <div>Score: ${score}%</div>
+            </div>
+          `;
+        }).join('');
+      }
 
       history.push({
         date: savedDate,
@@ -824,6 +855,7 @@
     
       loadTasksFromSupabase();
       loadUpcomingTasks();
+      loadHistory();
   </script>
 </body>
 </html>
