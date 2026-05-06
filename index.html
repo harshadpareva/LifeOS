@@ -333,7 +333,7 @@
       localStorage.setItem('lifeosHistory', JSON.stringify(history));
       saveHistoryToSupabase(savedDate, oldTasks);
       const todayTasks = oldTasks
-        .filter(task => task.repeatDaily)
+        .filter(task => isDailyTask(task))
         .map(task => ({
           name: task.name,
           category: task.category,
@@ -363,7 +363,7 @@
       }
 
       tasks = (data || []).map(task => {
-        if (task.repeatDaily && task.completedDate !== getTodayISO()) {
+        if (isDailyTask(task) && task.completedDate !== getTodayISO()) {
           return {
             ...task,
             status: 'pending',
@@ -429,7 +429,7 @@
             <span onclick="completeTask(${index})" style="cursor:pointer;">
               ${task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐'}
             </span>
-            ${task.name} ${task.repeatDaily ? '🔁' : ''}
+            ${task.name} ${isDailyTask(task) ? '🔁' : ''}
           </div>
           <div class="task-meta">
             Planned: ${task.plannedTime || '—'} • 
@@ -830,6 +830,10 @@
       return `${year}-${month}-${day}`;
     }
 
+    function isDailyTask(task) {
+      return task.frequency === 'daily' || task.repeatDaily === true;
+    }
+    
     function clearHistory() {
       const confirmClear = confirm('Clear all history?');
 
