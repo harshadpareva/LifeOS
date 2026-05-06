@@ -908,6 +908,7 @@
             Planned: ${task.plannedTime || '—'}
           </div>
           <div style="font-size:12px; margin-top:4px;">
+            <span style="color:#007bff; cursor:pointer; margin-right:10px;" onclick="editUpcomingTask('${task.id}', '${task.plannedDate || task.date}', '${task.plannedTime || ''}')">Edit</span>
             <span style="color:#999; cursor:pointer;" onclick="deleteUpcomingTask('${task.id}')">Delete</span>
           </div>
         </div>
@@ -932,6 +933,33 @@
       }
 
       loadUpcomingTasks();
+    }
+
+    async function editUpcomingTask(taskId, currentDate, currentTime) {
+      const newDate = prompt('Enter new date (YYYY-MM-DD)', currentDate);
+
+      if (!newDate) {
+        return;
+      }
+
+      const newTime = prompt('Enter planned time (HH:MM)', currentTime || '');
+
+      const { error } = await db
+        .from('tasks')
+        .update({
+          plannedDate: newDate,
+          date: newDate,
+          plannedTime: newTime || null
+        })
+        .eq('id', taskId);
+
+      if (error) {
+        console.log('Edit upcoming task error:', error);
+        return;
+      }
+
+      loadUpcomingTasks();
+      loadTasksFromSupabase();
     }
     
     async function saveTaskToSupabase(task) {
