@@ -903,7 +903,13 @@
       upcomingBox.innerHTML = data.map(task => `
         <div class="task">
           <div class="task-title">${task.name}</div>
-          <div class="task-meta">Date: ${task.date.split('-').reverse().join('/')} • Planned: ${task.plannedTime || '—'}</div>
+          <div class="task-meta">
+            Date: ${task.plannedDate ? task.plannedDate.split('-').reverse().join('/') : task.date.split('-').reverse().join('/')} • 
+            Planned: ${task.plannedTime || '—'}
+          </div>
+          <div style="font-size:12px; margin-top:4px;">
+            <span style="color:#999; cursor:pointer;" onclick="deleteUpcomingTask('${task.id}')">Delete</span>
+          </div>
         </div>
       `).join('');
     }
