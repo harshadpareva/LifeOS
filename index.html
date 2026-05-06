@@ -284,18 +284,21 @@
       oldTasks = oldTasks
         .filter(task => {
           const taskDate = task.plannedDate || task.date;
-          return taskDate === savedDate || task.completedDate === savedDate;
+          const daily = isDailyTask(task);
+
+          return daily || taskDate === savedDate || task.completedDate === savedDate;
         })
         .map(task => {
           const taskDate = task.plannedDate || task.date;
+          const daily = isDailyTask(task);
 
-          if (task.status === 'pending' && taskDate === savedDate) {
+          if (task.status === 'pending' && (daily || taskDate === savedDate)) {
             return { ...task, status: 'missed', completed: false };
           }
 
           return task;
         });
-
+      
       async function loadHistory() {
         const { data, error } = await db
           .from('history')
