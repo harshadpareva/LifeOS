@@ -860,16 +860,25 @@
       return task.frequency === 'daily' || task.repeatDaily === true;
     }
     
-    function clearHistory() {
+    async function clearHistory() {
       const confirmClear = confirm('Clear all history?');
 
       if (!confirmClear) {
         return;
       }
 
-      localStorage.removeItem('lifeosHistory');
+      const { error } = await db
+        .from('history')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000');
+
+      if (error) {
+        console.log('Clear history error:', error);
+        return;
+      }
 
       document.getElementById('historyContent').innerHTML = 'No history yet';
+      updateWeeklySummary();
     }
 
     async function loadUpcomingTasks() {
