@@ -621,7 +621,8 @@
       const name = document.getElementById('taskName').value.trim();
       const category = document.getElementById('taskCategory').value;
       const plannedTime = document.getElementById('plannedTime').value;
-      const repeatDaily = document.getElementById('repeatDaily').checked;
+      const frequency = document.getElementById('taskFrequency').value;
+      const repeatDaily = frequency === 'daily';
       const taskDate = document.getElementById('taskDate').value || getTodayISO();
 
       if (name === '') {
@@ -637,6 +638,7 @@
         plannedTime: plannedTime || null,
         actualTime: null,
         repeatDaily: repeatDaily,
+        frequency: frequency,
         plannedDate: taskDate,
         completedDate: null,
         date: taskDate
@@ -654,7 +656,7 @@
       document.getElementById('taskCategory').value = 'important';
       document.getElementById('addForm').style.display = 'none';
       document.getElementById('plannedTime').value = '';
-      document.getElementById('repeatDaily').checked = false;
+      document.getElementById('taskFrequency').value = 'once';
       document.getElementById('taskDate').value = '';
 
       saveTasks();
