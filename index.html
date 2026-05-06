@@ -913,6 +913,26 @@
         </div>
       `).join('');
     }
+
+    async function deleteUpcomingTask(taskId) {
+      const confirmDelete = confirm('Delete this upcoming task?');
+
+      if (!confirmDelete) {
+        return;
+      }
+
+      const { error } = await db
+        .from('tasks')
+        .delete()
+        .eq('id', taskId);
+
+      if (error) {
+        console.log('Delete upcoming task error:', error);
+        return;
+      }
+
+      loadUpcomingTasks();
+    }
     
     async function saveTaskToSupabase(task) {
       const { data, error } = await db
