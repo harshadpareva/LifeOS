@@ -383,15 +383,41 @@
         return;
       }
 
-      const { error } = await db.from('history').insert([
-        {
-          date: date,
-          tasks: tasks
-        }
-      ]);
+      const { data: existingHistory, error: findError } = await db
+        .from('history')
+        .select('*')
+        .eq('date', date)
+        .maybeSingle();
 
-      if (error) {
-        console.log('History save error:', error);
+      if (findError) {
+        console.log('Find history error:', findError);
+        return;
+      }
+
+      if (existingHistory) {
+        const { error: updateError } = await db
+          .from('history')
+          .update({
+            tasks: tasks
+          })
+          .eq('date', date);
+
+        if (updateError) {
+          console.log('History update error:', updateError);
+        }
+      } else {
+        const { error: insertError } = await db
+          .from('history')
+          .insert([
+            {
+              date: date,
+              tasks: tasks
+            }
+          ]);
+
+        if (insertError) {
+          console.log('History insert error:', insertError);
+        }
       }
     }
     
