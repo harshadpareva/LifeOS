@@ -366,18 +366,26 @@
         return;
       }
 
-      tasks = (data || []).map(task => {
-        if (isDailyTask(task) && task.completedDate !== getTodayISO()) {
-          return {
-            ...task,
-            status: 'pending',
-            completed: false,
-            actualTime: null
-          };
-        }
+      tasks = (data || [])
+        .filter(task => {
+          if (isWeeklyTask(task)) {
+            return isWeeklyDue(task);
+          }
 
-        return task;
-      });
+          return true;
+        })
+        .map(task => {
+          if ((isDailyTask(task) || isWeeklyTask(task)) && task.completedDate !== getTodayISO()) {
+            return {
+              ...task,
+              status: 'pending',
+              completed: false,
+              actualTime: null
+            };
+          }
+
+          return task;
+        });
 
       renderTasks();
     }
