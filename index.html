@@ -887,6 +887,17 @@
 
       return today.getDay() === planned.getDay();
     }
+
+    function isWeeklyDueOnDate(task, dateISO) {
+      if (!task.plannedDate || !dateISO) {
+        return false;
+      }
+
+      const checkDate = new Date(dateISO);
+      const planned = new Date(task.plannedDate);
+
+      return checkDate.getDay() === planned.getDay();
+    }
     
     async function clearHistory() {
       const confirmClear = confirm('Clear all history?');
