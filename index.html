@@ -662,7 +662,16 @@
     
     function toggleForm() {
       const form = document.getElementById('addForm');
-      form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    
+      if (form.style.display === 'block') {
+        form.style.display = 'none';
+      } else {
+        form.style.display = 'block';
+    
+        if (!document.getElementById('taskDate').value) {
+          document.getElementById('taskDate').value = getTodayISO();
+        }
+      }
     }
 
     async function addTask() {
