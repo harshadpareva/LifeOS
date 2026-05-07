@@ -488,6 +488,7 @@
             <span style="color:#007bff; cursor:pointer; margin-right:10px;" onclick="editTaskDate(event, ${index})">Date</span>
             <span style="color:#007bff; cursor:pointer; margin-right:10px;" onclick="editPlannedTime(event, ${index})">Planned</span>
             <span style="color:#007bff; cursor:pointer; margin-right:10px;" onclick="editActualTime(event, ${index})">Actual</span>
+            <span style="color:#999; cursor:pointer; margin-right:10px;" onclick="undoTask(event, ${index})">Undo</span>
             <span style="color:#999; cursor:pointer;" onclick="deleteTask(event, ${index})">Delete</span>
           </div>
         `;
@@ -721,6 +722,38 @@
       renderTasks();
     }
 
+    async function undoTask(event, index) {
+      event.stopPropagation();
+    
+      const confirmUndo = confirm('Move this task back to pending?');
+    
+      if (!confirmUndo) {
+        return;
+      }
+    
+      tasks[index].status = 'pending';
+      tasks[index].completed = false;
+      tasks[index].actualTime = null;
+      tasks[index].completedDate = null;
+    
+      const { error } = await db
+        .from('tasks')
+        .update({
+          status: 'pending',
+          completed: false,
+          actualTime: null,
+          completedDate: null
+        })
+        .eq('id', tasks[index].id);
+    
+      if (error) {
+        console.log('Undo task error:', error);
+        return;
+      }
+    
+      renderTasks();
+    }
+    
     async function editTaskDate(event, index) {
       event.stopPropagation();
     
