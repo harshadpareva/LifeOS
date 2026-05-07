@@ -359,7 +359,7 @@
       const { data, error } = await db
         .from('tasks')
         .select('*')
-        .or(`plannedDate.eq.${getTodayISO()},completedDate.eq.${getTodayISO()},repeatDaily.eq.true,frequency.eq.daily`)
+        .or(`plannedDate.eq.${getTodayISO()},completedDate.eq.${getTodayISO()},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly`)
 
       if (error) {
         console.log('Load error:', error);
@@ -867,6 +867,17 @@
 
     function isWeeklyTask(task) {
       return task.frequency === 'weekly';
+    }
+
+    function isWeeklyDue(task) {
+      if (!task.plannedDate) {
+        return false;
+      }
+
+      const today = new Date(getTodayISO());
+      const planned = new Date(task.plannedDate);
+
+      return today.getDay() === planned.getDay();
     }
     
     async function clearHistory() {
