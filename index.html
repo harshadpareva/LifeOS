@@ -1160,9 +1160,12 @@
     }
 
     showTodayDate();
-    
+
+    handleDateRollover().then(() => {
       loadTasksFromSupabase();
       loadUpcomingTasks();
+      updateWeeklySummary();
+    });
       
   </script>
 </body>
