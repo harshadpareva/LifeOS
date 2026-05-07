@@ -276,85 +276,72 @@
     const supabaseKey = 'sb_publishable_t8BL-oh1pynf1MPDVDzZ-w_A7in2J7a';
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
     
-    let savedDate = localStorage.getItem('lifeosDate');
-    let today = getTodayISO();
+    async function handleDateRollover() {
+      const savedDate = localStorage.getItem('lifeosDate');
+      const today = getTodayISO();
     
-    if (savedDate !== today) {
-      let oldTasks = JSON.parse(localStorage.getItem('lifeosTasks')) || [];
-
-      oldTasks = oldTasks
+      if (!savedDate) {
+        localStorage.setItem('lifeosDate', today);
+        return;
+      }
+    
+      if (savedDate === today) {
+        return;
+      }
+    
+      const { data, error } = await db
+        .from('tasks')
+        .select('*')
+        .or(`plannedDate.eq.${savedDate},date.eq.${savedDate},completedDate.eq.${savedDate},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly`);
+    
+      if (error) {
+        console.log('Rollover load error:', error);
+        return;
+      }
+    
+      const historyTasks = (data || [])
         .filter(task => {
           const taskDate = task.plannedDate || task.date;
           const daily = isDailyTask(task);
           const weeklyDue = isWeeklyTask(task) && isWeeklyDueOnDate(task, savedDate);
-      
-          return daily || weeklyDue || taskDate === savedDate || task.completedDate === savedDate;
+          const plannedThatDay = taskDate === savedDate;
+          const completedThatDay = task.completedDate === savedDate;
+    
+          return daily || weeklyDue || plannedThatDay || completedThatDay;
         })
         .map(task => {
           const taskDate = task.plannedDate || task.date;
           const daily = isDailyTask(task);
           const weeklyDue = isWeeklyTask(task) && isWeeklyDueOnDate(task, savedDate);
-      
-          if (task.status === 'pending' && (daily || weeklyDue || taskDate === savedDate)) {
-            return { ...task, status: 'missed', completed: false };
+          const plannedThatDay = taskDate === savedDate;
+          const completedThatDay = task.completedDate === savedDate;
+          const dueThatDay = daily || weeklyDue || plannedThatDay;
+    
+          if (completedThatDay) {
+            return {
+              ...task,
+              status: 'completed',
+              completed: true
+            };
           }
-      
+    
+          if (dueThatDay) {
+            return {
+              ...task,
+              status: 'missed',
+              completed: false,
+              actualTime: null
+            };
+          }
+    
           return task;
         });
-      
-      async function loadHistory() {
-        const { data, error } = await db
-          .from('history')
-          .select('*')
-          .order('date', { ascending: false });
-
-        if (error) {
-          console.log('History load error:', error);
-          return;
-        }
-
-        const historyContent = document.getElementById('historyContent');
-
-        if (!data || data.length === 0) {
-          historyContent.innerHTML = '<div>No history yet</div>';
-          return;
-        }
-
-        historyContent.innerHTML = data.map(day => {
-          const completed = (day.tasks || []).filter(t => t.status === 'completed').length;
-          const total = (day.tasks || []).length;
-          const score = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-          return `
-            <div class="history-day">
-              <strong>${day.date}</strong>
-              <div>Completed: ${completed}/${total}</div>
-              <div>Score: ${score}%</div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      
-      localStorage.setItem('lifeosHistory', JSON.stringify(history));
-      saveHistoryToSupabase(savedDate, oldTasks);
-      const todayTasks = oldTasks
-        .filter(task => isDailyTask(task))
-        .map(task => ({
-          name: task.name,
-          category: task.category,
-          status: 'pending',
-          completed: false,
-          plannedTime: task.plannedTime || null,
-          actualTime: null,
-          repeatDaily: true
-      }));
-
-      localStorage.setItem('lifeosTasks', JSON.stringify(todayTasks));
+    
+      await saveHistoryToSupabase(savedDate, historyTasks);
+    
       localStorage.setItem('lifeosDate', today);
-      // localStorage.removeItem('lifeosTasks');
     }
-
+    
     let tasks = [];
 
     async function loadTasksFromSupabase() {
