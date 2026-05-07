@@ -467,7 +467,7 @@
             <span onclick="completeTask(${index})" style="cursor:pointer;">
               ${task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐'}
             </span>
-            ${task.name} ${isDailyTask(task) ? '🔁' : ''}
+            ${task.name} ${isDailyTask(task) ? '🔁' : isWeeklyTask(task) ? '🔂' : ''}
           </div>
           <div class="task-meta">
             Planned: ${task.plannedTime || '—'} • 
@@ -1028,12 +1028,12 @@
       const currentFrequency = tasks[index].frequency || (tasks[index].repeatDaily ? 'daily' : 'once');
 
       const newFrequency = prompt(
-        'Edit frequency: once or daily',
+        'Edit frequency: once, daily, or weekly',
         currentFrequency
       );
 
-      if (!['once', 'daily'].includes(newFrequency)) {
-        alert('Invalid frequency. Use once or daily.');
+      if (!['once', 'daily', 'weekly'].includes(newFrequency)) {
+        alert('Invalid frequency. Use once, daily, or weekly.');
         return;
       }
 
