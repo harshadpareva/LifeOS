@@ -982,6 +982,44 @@
       return data;
     }
     
+    async function editTaskDetails(event, index) {
+      event.stopPropagation();
+
+      const newName = prompt('Edit task name', tasks[index].name);
+
+      if (!newName || newName.trim() === '') {
+        return;
+      }
+
+      const newCategory = prompt(
+        'Edit category: important, daily, or small',
+        tasks[index].category
+      );
+
+      if (!['important', 'daily', 'small'].includes(newCategory)) {
+        alert('Invalid category. Use important, daily, or small.');
+        return;
+      }
+
+      tasks[index].name = newName.trim();
+      tasks[index].category = newCategory;
+
+      const { error } = await db
+        .from('tasks')
+        .update({
+          name: tasks[index].name,
+          category: tasks[index].category
+        })
+        .eq('id', tasks[index].id);
+
+      if (error) {
+        console.log('Edit task details error:', error);
+        return;
+      }
+
+      renderTasks();
+    }
+    
     function showTodayDate() {
       const today = new Date();
 
