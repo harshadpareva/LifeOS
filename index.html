@@ -1001,14 +1001,30 @@
         return;
       }
 
+      const currentFrequency = tasks[index].frequency || (tasks[index].repeatDaily ? 'daily' : 'once');
+
+      const newFrequency = prompt(
+        'Edit frequency: once or daily',
+        currentFrequency
+      );
+
+      if (!['once', 'daily'].includes(newFrequency)) {
+        alert('Invalid frequency. Use once or daily.');
+        return;
+      }
+
       tasks[index].name = newName.trim();
       tasks[index].category = newCategory;
-
+      tasks[index].frequency = newFrequency;
+      tasks[index].repeatDaily = newFrequency === 'daily';
+      
       const { error } = await db
         .from('tasks')
         .update({
           name: tasks[index].name,
-          category: tasks[index].category
+          category: tasks[index].category,
+          frequency: tasks[index].frequency,
+          repeatDaily: tasks[index].repeatDaily
         })
         .eq('id', tasks[index].id);
 
