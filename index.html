@@ -247,6 +247,7 @@
       <select id="taskFrequency" style="margin-bottom:10px;">
         <option value="once">One-time</option>
         <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
       </select>
 
       <button class="save-button" onclick="addTask()">Save Task</button>
@@ -862,6 +863,10 @@
 
     function isDailyTask(task) {
       return task.frequency === 'daily' || task.repeatDaily === true;
+    }
+
+    function isWeeklyTask(task) {
+      return task.frequency === 'weekly';
     }
     
     async function clearHistory() {
