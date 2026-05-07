@@ -721,6 +721,37 @@
       renderTasks();
     }
 
+    async function editTaskDate(event, index) {
+      event.stopPropagation();
+    
+      const currentDate = tasks[index].plannedDate || tasks[index].date || getTodayISO();
+    
+      const newDate = prompt('Enter task date (YYYY-MM-DD)', currentDate);
+    
+      if (!newDate) {
+        return;
+      }
+    
+      tasks[index].plannedDate = newDate;
+      tasks[index].date = newDate;
+    
+      const { error } = await db
+        .from('tasks')
+        .update({
+          plannedDate: newDate,
+          date: newDate
+        })
+        .eq('id', tasks[index].id);
+    
+      if (error) {
+        console.log('Edit task date error:', error);
+        return;
+      }
+    
+      loadTasksFromSupabase();
+      loadUpcomingTasks();
+    }
+    
     async function editPlannedTime(event, index) {
       event.stopPropagation();
 
