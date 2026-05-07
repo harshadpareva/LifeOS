@@ -453,7 +453,14 @@
       document.getElementById('dailyTasks').innerHTML = '';
       document.getElementById('smallTasks').innerHTML = '';
 
-      tasks.forEach((task, index) => {
+      tasks
+        .map((task, index) => ({ task, index }))
+        .sort((a, b) => {
+          const timeA = a.task.plannedTime || '99:99';
+          const timeB = b.task.plannedTime || '99:99';
+          return timeA.localeCompare(timeB);
+        })
+        .forEach(({ task, index }) => {
         const taskDiv = document.createElement('div');
         taskDiv.className = 'task';
 
