@@ -642,6 +642,44 @@
         completedImportantTasks + ' / ' + importantTasks.length;
     }
 
+    function updateCommandCenter() {
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter(task => task.status === 'completed').length;
+      const score = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+    
+      document.getElementById('commandProgressText').textContent =
+        completedTasks + ' / ' + totalTasks + ' completed';
+    
+      document.getElementById('commandProgressBar').style.width = score + '%';
+      document.getElementById('commandProgressPercent').textContent = score + '%';
+    
+      const pendingTasks = tasks
+        .filter(task => task.status !== 'completed')
+        .sort((a, b) => {
+          const timeA = a.plannedTime || '99:99';
+          const timeB = b.plannedTime || '99:99';
+          return timeA.localeCompare(timeB);
+        });
+    
+      if (pendingTasks.length === 0) {
+        document.getElementById('commandNextTask').textContent = 'All tasks completed 🎉';
+      } else {
+        const nextTask = pendingTasks[0];
+        document.getElementById('commandNextTask').textContent =
+          nextTask.name + (nextTask.plannedTime ? ' at ' + nextTask.plannedTime : '');
+      }
+    
+      let mood = 'Start small. One task is enough.';
+    
+      if (score > 70) {
+        mood = 'Strong day. Finish clean.';
+      } else if (score >= 30) {
+        mood = 'Good momentum. Keep going.';
+      }
+    
+      document.getElementById('commandMood').textContent = mood;
+    }
+    
     async function updateWeeklySummary() {
       const { data, error } = await db
         .from('history')
