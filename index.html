@@ -57,6 +57,32 @@
       border-bottom: none;
     }
 
+    .task-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    
+    .task-action {
+      font-size: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #f2f2f2;
+      color: #333;
+      cursor: pointer;
+    }
+    
+    .task-action.primary {
+      background: #eaf2ff;
+      color: #007bff;
+    }
+    
+    .task-action.danger {
+      background: #fff0f0;
+      color: #cc0000;
+    }
+    
     .task-title {
       font-weight: bold;
     }
