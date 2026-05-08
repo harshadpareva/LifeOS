@@ -194,6 +194,35 @@
       <p style="margin-top:4px; color:#666;">Today’s plan • <span id="todayDate"></span></p>
     </div>
 
+    <div class="card" id="commandCenter">
+      <h2>Today Command Center</h2>
+    
+      <div class="summary">
+        <span>Progress</span>
+        <span id="commandProgressText">0 / 0 completed</span>
+      </div>
+    
+      <div style="background:#eee; border-radius:999px; overflow:hidden; margin-top:10px;">
+        <div id="commandProgressBar" style="height:12px; width:0%; background:#111;"></div>
+      </div>
+    
+      <div style="font-size:13px; margin-top:6px;" id="commandProgressPercent">0%</div>
+    
+      <br>
+    
+      <div>
+        <strong>Next Task</strong>
+        <div id="commandNextTask" style="margin-top:6px; color:#555;">No pending tasks</div>
+      </div>
+    
+      <br>
+    
+      <div>
+        <strong>Mood</strong>
+        <div id="commandMood" style="margin-top:6px; color:#555;">Start small. One task is enough.</div>
+      </div>
+    </div>
+    
     <div class="card">
       <h2 onclick="toggleSection('importantTasks')" style="cursor:pointer;">⭐ Important Today ˅</h2>
       <div id="importantTasks"></div>
