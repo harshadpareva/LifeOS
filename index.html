@@ -72,6 +72,39 @@
       color: #333;
       cursor: pointer;
     }
+
+    @media (min-width: 700px) {
+      .task-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+        margin-top: 6px;
+      }
+    
+      .task-action,
+      .task-action.primary,
+      .task-action.danger {
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+        font-size: 12px;
+        color: #333;
+      }
+    
+      .task-action.primary {
+        color: #007bff;
+      }
+    
+      .task-action.danger {
+        color: #999;
+      }
+    
+      .task-action + .task-action::before {
+        content: "|";
+        color: #999;
+        margin: 0 8px;
+      }
+    }
     
     .task-action.primary {
       background: #eaf2ff;
