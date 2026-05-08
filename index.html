@@ -244,24 +244,6 @@
     </div>
     
     <div class="card">
-      <h2>Today Summary</h2>
-      <div class="summary">
-        <span>Completed</span>
-        <span id="completedCount">0 / 0</span>
-      </div>
-      <br>
-      <div class="summary">
-        <span>Important Done</span>
-        <span id="importantCount">0 / 0</span>
-      </div>
-      <br>
-      <div class="summary">
-        <span>Today Score</span>
-        <span id="todayScore">0%</span>
-      </div>
-    </div>
-
-    <div class="card">
       <h2>Weekly Summary</h2>
 
       <div class="summary">
@@ -523,6 +505,15 @@
       });
     }
 
+    function getCurrentHHMM() {
+      const now = new Date();
+    
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+      return `${hours}:${minutes}`;
+    }
+    
     function renderTasks() {
       document.getElementById('importantTasks').innerHTML = '';
       document.getElementById('dailyTasks').innerHTML = '';
@@ -579,7 +570,6 @@
         }
       });
 
-      updateSummary();
       updateCommandCenter();
       updateWeeklySummary();
     }
@@ -654,20 +644,34 @@
       document.getElementById('commandProgressBar').style.width = score + '%';
       document.getElementById('commandProgressPercent').textContent = score + '%';
     
-      const pendingTasks = tasks
-        .filter(task => task.status !== 'completed')
+      const currentTime = getCurrentHHMM();
+
+      const pendingTasks = tasks.filter(task => task.status !== 'completed');
+      
+      const upcomingPendingTasks = pendingTasks
+        .filter(task => task.plannedTime && task.plannedTime >= currentTime)
         .sort((a, b) => {
-          const timeA = a.plannedTime || '99:99';
-          const timeB = b.plannedTime || '99:99';
-          return timeA.localeCompare(timeB);
+          return a.plannedTime.localeCompare(b.plannedTime);
         });
-    
-      if (pendingTasks.length === 0) {
-        document.getElementById('commandNextTask').textContent = 'All tasks completed 🎉';
-      } else {
-        const nextTask = pendingTasks[0];
+      
+      const untimedPendingTasks = pendingTasks.filter(task => !task.plannedTime);
+      
+      if (upcomingPendingTasks.length > 0) {
+        const nextTask = upcomingPendingTasks[0];
+      
         document.getElementById('commandNextTask').textContent =
-          nextTask.name + (nextTask.plannedTime ? ' at ' + nextTask.plannedTime : '');
+          nextTask.name + ' at ' + nextTask.plannedTime;
+      } else if (untimedPendingTasks.length > 0) {
+        const nextTask = untimedPendingTasks[0];
+      
+        document.getElementById('commandNextTask').textContent =
+          nextTask.name + ' (no time set)';
+      } else if (pendingTasks.length > 0) {
+        document.getElementById('commandNextTask').textContent =
+          'No upcoming timed tasks. Review overdue tasks.';
+      } else {
+        document.getElementById('commandNextTask').textContent =
+          'All tasks completed 🎉';
       }
     
       let mood = 'Start small. One task is enough.';
