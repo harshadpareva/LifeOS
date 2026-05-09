@@ -189,6 +189,22 @@
 <body>
   <div class="container">
 
+    <div class="card" id="authBox">
+      <h2>LifeOS Login</h2>
+    
+      <input type="email" id="authEmail" placeholder="Email">
+    
+      <input type="password" id="authPassword" placeholder="Password">
+    
+      <button class="save-button" onclick="signUp()">Sign Up</button>
+    
+      <br><br>
+    
+      <button class="save-button" onclick="login()">Login</button>
+    </div>
+    
+    <div id="appContent" style="display:none;">
+
     <div class="header" style="text-align:center;">
       <h1 style="margin-bottom:6px;">LifeOS</h1>
       <p style="margin:0; font-weight:bold;">Good Morning, Harshad</p>
@@ -1365,5 +1381,6 @@
     });
       
   </script>
+</div>
 </body>
 </html>
