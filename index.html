@@ -911,8 +911,15 @@
         console.log('Undo task error:', error);
         return;
       }
-    
+
+      await db
+        .from('task_logs')
+        .delete()
+        .eq('task_id', tasks[index].id)
+        .eq('log_date', getTodayISO());
+            
       renderTasks();
+      
     }
     
     async function editTaskDate(event, index) {
