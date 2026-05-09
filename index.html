@@ -4,6 +4,7 @@
   <title>LifeOS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
+  <button class="save-button" onclick="logout()">Logout</button>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
@@ -1361,6 +1362,61 @@
 
       renderTasks();
     }
+
+    async function signUp() {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+    
+      const { data, error } = await db.auth.signUp({
+        email: email,
+        password: password
+      });
+    
+      if (error) {
+        alert(error.message);
+        return;
+      }
+    
+      alert('Account created. Check your email if confirmation is required.');
+    }
+    
+    async function login() {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+    
+      const { data, error } = await db.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+    
+      if (error) {
+        alert(error.message);
+        return;
+      }
+    
+      checkAuth();
+    }
+    
+    async function logout() {
+      await db.auth.signOut();
+      checkAuth();
+    }
+    
+    async function checkAuth() {
+      const { data } = await db.auth.getSession();
+    
+      if (data.session) {
+        document.getElementById('authBox').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+    
+        loadTasksFromSupabase();
+        loadUpcomingTasks();
+        updateWeeklySummary();
+      } else {
+        document.getElementById('authBox').style.display = 'block';
+        document.getElementById('appContent').style.display = 'none';
+      }
+    }
     
     function showTodayDate() {
       const today = new Date();
@@ -1375,9 +1431,7 @@
     showTodayDate();
 
     handleDateRollover().then(() => {
-      loadTasksFromSupabase();
-      loadUpcomingTasks();
-      updateWeeklySummary();
+      checkAuth();
     });
       
   </script>
