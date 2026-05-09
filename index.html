@@ -449,6 +449,38 @@
       renderTasks();
     }
 
+    async function saveTaskLog(task, logDate, status) {
+      if (!task || !task.id || !logDate) {
+        return;
+      }
+    
+      // remove old log for same task + same date to avoid duplicates
+      await db
+        .from('task_logs')
+        .delete()
+        .eq('task_id', task.id)
+        .eq('log_date', logDate);
+    
+      const { error } = await db
+        .from('task_logs')
+        .insert([
+          {
+            task_id: task.id,
+            task_name: task.name,
+            log_date: logDate,
+            status: status,
+            actualTime: task.actualTime || null,
+            plannedTime: task.plannedTime || null,
+            category: task.category || null,
+            frequency: task.frequency || (task.repeatDaily ? 'daily' : 'once')
+          }
+        ]);
+    
+      if (error) {
+        console.log('Task log save error:', error);
+      }
+    }
+    
     async function saveHistoryToSupabase(date, tasks) {
       if (!date || !tasks || tasks.length === 0) {
         return;
@@ -596,8 +628,11 @@
 
       if (error) {
         console.log('Complete task error:', error);
+        return;
       }
 
+      await saveTaskLog(tasks[index], getTodayISO(), 'completed');
+      
       renderTasks();
     }
 
