@@ -485,7 +485,7 @@
         .from('task_logs')
         .delete()
         .eq('task_id', task.id)
-        .eq('log_date', logDate);
+        .eq('log_date', logDate)
         .eq('user_id', currentUser.id);
     
       const { error } = await db
