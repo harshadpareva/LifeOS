@@ -497,7 +497,8 @@
             actualTime: task.actualTime || null,
             plannedTime: task.plannedTime || null,
             category: task.category || null,
-            frequency: task.frequency || (task.repeatDaily ? 'daily' : 'once')
+            frequency: task.frequency || (task.repeatDaily ? 'daily' : 'once'),
+            user_id: currentUser.id
           }
         ]);
     
@@ -539,7 +540,8 @@
           .insert([
             {
               date: date,
-              tasks: tasks
+              tasks: tasks,
+              user_id: currentUser.id
             }
           ]);
 
@@ -880,7 +882,8 @@
         frequency: frequency,
         plannedDate: taskDate,
         completedDate: null,
-        date: taskDate
+        date: taskDate,
+        user_id: currentUser.id
       };
 
       const savedTask = await saveTaskToSupabase(newTask);
