@@ -653,7 +653,8 @@
           actualTime: tasks[index].actualTime,
           completedDate: getTodayISO()
         })
-        .eq('id', tasks[index].id);
+        .eq('id', tasks[index].id)
+        .eq('user_id', currentUser.id);
 
       if (error) {
         console.log('Complete task error:', error);
@@ -929,7 +930,8 @@
           actualTime: null,
           completedDate: null
         })
-        .eq('id', tasks[index].id);
+        .eq('id', tasks[index].id)
+        .eq('user_id', currentUser.id);
     
       if (error) {
         console.log('Undo task error:', error);
@@ -966,7 +968,8 @@
           plannedDate: newDate,
           date: newDate
         })
-        .eq('id', tasks[index].id);
+        .eq('id', tasks[index].id)
+        .eq('user_id', currentUser.id);
     
       if (error) {
         console.log('Edit task date error:', error);
@@ -991,7 +994,8 @@
       const { error } = await db
         .from('tasks')
         .update({ plannedTime: newTime })
-        .eq('id', tasks[index].id);
+        .eq('id', tasks[index].id)
+        .eq('user_id', currentUser.id);
 
       if (error) {
         console.log('Edit planned time error:', error);
@@ -1023,7 +1027,8 @@
           completed: true,
           completedDate: getTodayISO()
         })
-        .eq('id', tasks[index].id);
+        .eq('id', tasks[index].id)
+        .eq('user_id', currentUser.id);
 
       if (error) {
         console.log('Edit actual time error:', error);
@@ -1045,7 +1050,8 @@
       const { error } = await db
         .from('tasks')
         .delete()
-        .eq('id', tasks[index].id);
+        .eq('id', tasks[index].id)
+        .eq('user_id', currentUser.id);
 
       if (error) {
         console.log('Delete task error:', error);
@@ -1137,7 +1143,8 @@
       const { error } = await db
         .from('tasks')
         .delete()
-        .eq('date', getTodayISO());
+        .eq('date', getTodayISO())
+        .eq('user_id', currentUser.id);
 
       if (error) {
         console.log('Reset today error:', error);
@@ -1361,7 +1368,8 @@
           frequency: tasks[index].frequency,
           repeatDaily: tasks[index].repeatDaily
         })
-        .eq('id', tasks[index].id);
+        .eq('id', tasks[index].id)
+        .eq('user_id', currentUser.id);
 
       if (error) {
         console.log('Edit task details error:', error);
