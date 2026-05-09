@@ -380,6 +380,7 @@
       const { data, error } = await db
         .from('tasks')
         .select('*')
+        .eq('user_id', currentUser.id)
         .or(`plannedDate.eq.${savedDate},date.eq.${savedDate},completedDate.eq.${savedDate},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly`);
     
       if (error) {
@@ -1220,6 +1221,7 @@
       const { data, error } = await db
         .from('tasks')
         .select('*')
+        .eq('user_id', currentUser.id)
         .gt('date', getTodayISO())
         .order('date', { ascending: true });
 
