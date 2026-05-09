@@ -1028,58 +1028,69 @@
     async function showHistory() {
       const historyBox = document.getElementById('historyBox');
       const historyContent = document.getElementById('historyContent');
-
+    
       if (historyBox.style.display === 'block') {
         historyBox.style.display = 'none';
         return;
       }
-
+    
       const { data, error } = await db
-        .from('history')
+        .from('task_logs')
         .select('*')
-        .order('date', { ascending: false });
-
+        .order('log_date', { ascending: false });
+    
       if (error) {
-        console.log('History load error:', error);
+        console.log('Task logs history load error:', error);
         historyContent.innerHTML = 'Could not load history';
         historyBox.style.display = 'block';
         return;
       }
-
-      const history = data || [];
-
-      if (history.length === 0) {
+    
+      const logs = data || [];
+    
+      if (logs.length === 0) {
         historyContent.innerHTML = 'No history yet';
         historyBox.style.display = 'block';
         return;
       }
-
+    
+      const grouped = {};
+    
+      logs.forEach(log => {
+        if (!grouped[log.log_date]) {
+          grouped[log.log_date] = [];
+        }
+    
+        grouped[log.log_date].push(log);
+      });
+    
       let html = '';
-
-      history.forEach(day => {
-        const dayTasks = (day.tasks || []).sort((a, b) => {
+    
+      Object.keys(grouped).forEach(date => {
+        const dayLogs = grouped[date].sort((a, b) => {
           const timeA = a.plannedTime || '99:99';
           const timeB = b.plannedTime || '99:99';
           return timeA.localeCompare(timeB);
         });
-        const completed = dayTasks.filter(task => task.status === 'completed').length;
-        const missed = dayTasks.filter(task => task.status === 'missed').length;
-        const total = dayTasks.length;
-
+    
+        const completed = dayLogs.filter(log => log.status === 'completed').length;
+        const missed = dayLogs.filter(log => log.status === 'missed').length;
+        const total = dayLogs.length;
+    
         html += `<div style="margin-bottom:16px; padding:12px; border:1px solid #eee; border-radius:12px;">
-          <strong>${day.date}</strong>
+          <strong>${date}</strong>
           <div style="font-size:13px; color:#666; margin-top:4px;">
             Completed: ${completed}/${total} • Missed: ${missed}
           </div>
           <div style="margin-top:10px;">
-            ${dayTasks.map(task => {
-              const icon = task.status === 'completed' ? '✅' : task.status === 'missed' ? '❌' : '☐';
-              return `<div style="margin-bottom:5px;">${icon} ${task.name}</div>`;
+            ${dayLogs.map(log => {
+              const icon = log.status === 'completed' ? '✅' : '❌';
+              return `<div style="margin-bottom:5px;">${icon} ${log.task_name}</div>`;
             }).join('')}
           </div>
         </div>`;
       });
-
+    
       historyContent.innerHTML = html;
       historyBox.style.display = 'block';
     }
