@@ -437,6 +437,7 @@
     }
     
     let tasks = [];
+    let currentUser = null;
 
     async function loadTasksFromSupabase() {
       const { data, error } = await db
@@ -1406,13 +1407,18 @@
       const { data } = await db.auth.getSession();
     
       if (data.session) {
+        currentUser = data.session.user;
+    
         document.getElementById('authBox').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
     
-        loadTasksFromSupabase();
-        loadUpcomingTasks();
-        updateWeeklySummary();
+        await handleDateRollover();
+        await loadTasksFromSupabase();
+        await loadUpcomingTasks();
+        await updateWeeklySummary();
       } else {
+        currentUser = null;
+    
         document.getElementById('authBox').style.display = 'block';
         document.getElementById('appContent').style.display = 'none';
       }
@@ -1429,10 +1435,7 @@
     }
 
     showTodayDate();
-
-    handleDateRollover().then(() => {
-      checkAuth();
-    });
+    checkAuth();
       
   </script>
 </div>
