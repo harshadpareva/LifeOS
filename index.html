@@ -532,7 +532,7 @@
           .update({
             tasks: tasks
           })
-          .eq('date', date);
+          .eq('date', date)
           .eq('user_id', currentUser.id)
 
         if (updateError) {
