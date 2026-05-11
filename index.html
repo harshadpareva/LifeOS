@@ -518,6 +518,7 @@
         .from('history')
         .select('*')
         .eq('date', date)
+        .eq('user_id', currentUser.id)
         .maybeSingle();
 
       if (findError) {
@@ -532,6 +533,7 @@
             tasks: tasks
           })
           .eq('date', date);
+          .eq('user_id', currentUser.id)
 
         if (updateError) {
           console.log('History update error:', updateError);
