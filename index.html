@@ -13,8 +13,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/png" href="/icon-192.png">
   <link rel="apple-touch-icon" href="/icon-192.png">
-  
-  <button class="save-button" onclick="logout()">Logout</button>
+    
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
@@ -194,6 +193,43 @@
       color: #111;
       border: 1px solid #ddd;
     }
+
+    .app-header {
+      position: relative;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .app-header h1 {
+      margin-bottom: 6px;
+      font-size: 32px;
+    }
+    
+    .greeting {
+      margin: 0;
+      font-weight: bold;
+      color: #444;
+    }
+    
+    .date-line {
+      margin-top: 4px;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .logout-button {
+      position: absolute;
+      right: 0;
+      top: 4px;
+      background: #f2f2f2;
+      color: #555;
+      border: 1px solid #ddd;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
   </style>
 </head>
 
@@ -216,10 +252,12 @@
     
     <div id="appContent" style="display:none;">
 
-    <div class="header" style="text-align:center;">
-      <h1 style="margin-bottom:6px;">LifeOS</h1>
-      <p style="margin:0; font-weight:bold;">Good Morning, Harshad</p>
-      <p style="margin-top:4px; color:#666;">Today’s plan • <span id="todayDate"></span></p>
+    <div class="app-header">
+      <button class="logout-button" onclick="logout()">Logout</button>
+    
+      <h1>LifeOS</h1>
+      <p class="greeting">Good Morning, Harshad</p>
+      <p class="date-line">Today’s plan • <span id="todayDate"></span></p>
     </div>  
 
     <div class="card" id="welcomeCard">
