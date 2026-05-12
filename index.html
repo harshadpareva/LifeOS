@@ -1540,6 +1540,7 @@
         await loadTasksFromSupabase();
         await loadUpcomingTasks();
         await updateWeeklySummary();
+        await updateHabitInsights();
       } else {
         currentUser = null;
     
@@ -1566,6 +1567,70 @@
       document.getElementById('todayDate').textContent = `${day}/${month}/${year}`;
     }
 
+    async function updateHabitInsights() {
+      const { data, error } = await db
+        .from('task_logs')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('log_date', { ascending: true });
+    
+      if (error) {
+        console.log('Habit insights error:', error);
+        return;
+      }
+    
+      const logs = data || [];
+      const insightsBox = document.getElementById('habitInsights');
+    
+      if (logs.length === 0) {
+        insightsBox.innerHTML = '<div class="task-meta">No insights yet</div>';
+        return;
+      }
+    
+      const grouped = {};
+    
+      logs.forEach(log => {
+        if (!grouped[log.task_name]) {
+          grouped[log.task_name] = [];
+        }
+    
+        grouped[log.task_name].push(log);
+      });
+    
+      let html = '';
+    
+      Object.keys(grouped).forEach(taskName => {
+        const taskLogs = grouped[taskName];
+    
+        let streak = 0;
+    
+        for (let i = taskLogs.length - 1; i >= 0; i--) {
+          if (taskLogs[i].status === 'completed') {
+            streak++;
+          } else {
+            break;
+          }
+        }
+    
+        const last5 = taskLogs.slice(-5);
+    
+        html += `
+          <div style="padding:12px; border:1px solid #eee; border-radius:14px; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>${taskName}</strong>
+              <span style="font-size:13px;">🔥 ${streak} day streak</span>
+            </div>
+    
+            <div style="margin-top:10px; font-size:18px;">
+              ${last5.map(log => log.status === 'completed' ? '✅' : '❌').join(' ')}
+            </div>
+          </div>
+        `;
+      });
+    
+      insightsBox.innerHTML = html;
+    }
+    
     showTodayDate();
     checkAuth();
     
