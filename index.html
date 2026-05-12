@@ -641,30 +641,33 @@
       if (tasks[index].status === 'completed') {
         return;
       }
-
-      tasks[index].status = 'completed';
-      tasks[index].completed = true;
-      tasks[index].actualTime = getCurrentTime();
-      tasks[index].completedDate = getTodayISO();
-
-      const { error } = await db
+    
+      const actualTime = getCurrentTime();
+      const today = getTodayISO();
+    
+      const { data, error } = await db
         .from('tasks')
         .update({
           status: 'completed',
           completed: true,
-          actualTime: tasks[index].actualTime,
-          completedDate: getTodayISO()
+          actualTime: actualTime,
+          completedDate: today
         })
         .eq('id', tasks[index].id)
-        .eq('user_id', currentUser.id);
-
+        .eq('user_id', currentUser.id)
+        .select()
+        .single();
+    
       if (error) {
         console.log('Complete task error:', error);
+        alert('Task could not be saved. Check console.');
         return;
       }
-
-      await saveTaskLog(tasks[index], getTodayISO(), 'completed');
-      
+    
+      tasks[index] = data;
+    
+      await saveTaskLog(tasks[index], today, 'completed');
+    
       renderTasks();
     }
 
