@@ -1607,6 +1607,7 @@
       const logs = (data || []).filter(log => {
         return log.frequency === 'daily' || log.frequency === 'weekly';
       });
+    
       const insightsBox = document.getElementById('habitInsights');
     
       if (logs.length === 0) {
@@ -1657,7 +1658,7 @@
     
       insightsBox.innerHTML = html;
     }
-
+    
     function toggleCard(contentId) {
       const content = document.getElementById(contentId);
     
