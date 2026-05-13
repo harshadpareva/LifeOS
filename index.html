@@ -1629,7 +1629,17 @@
     
       let html = '';
     
-      Object.keys(grouped).forEach(taskName => {
+      Object.keys(grouped)
+        .sort((a, b) => {
+          const logsA = grouped[a];
+          const logsB = grouped[b];
+      
+          const timeA = [...logsA].reverse().find(log => log.plannedTime)?.plannedTime || '99:99';
+          const timeB = [...logsB].reverse().find(log => log.plannedTime)?.plannedTime || '99:99';
+      
+          return timeA.localeCompare(timeB);
+        })
+        .forEach(taskName => {
         const taskLogs = grouped[taskName];
     
         let streak = 0;
