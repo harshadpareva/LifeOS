@@ -1578,9 +1578,21 @@
       }
     }
 
-    function hideWelcome() {
+    async function hideWelcome() {
       document.getElementById('welcomeCard').style.display = 'none';
-      localStorage.setItem('lifeosWelcomeHidden', 'true');
+    
+      const { error } = await db
+        .from('user_settings')
+        .upsert([
+          {
+            user_id: currentUser.id,
+            welcome_hidden: true
+          }
+        ]);
+    
+      if (error) {
+        console.log('Welcome hide save error:', error);
+      }
     }
     
     function showTodayDate() {
