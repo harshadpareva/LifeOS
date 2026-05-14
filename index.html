@@ -1571,10 +1571,9 @@
         currentUser = null;
     
         document.getElementById('authBox').style.display = 'block';
-        if (localStorage.getItem('lifeosWelcomeHidden') === 'true') {
-          document.getElementById('welcomeCard').style.display = 'none';
-        }
         document.getElementById('appContent').style.display = 'none';
+
+        await loadUserSettings();
       }
     }
 
@@ -1700,7 +1699,31 @@
         .then(() => console.log('Service worker registered'))
         .catch(error => console.log('Service worker error:', error));
     }
-      
+
+    async function loadUserSettings() {
+      const { data, error } = await db
+        .from('user_settings')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+    
+      if (error) {
+        console.log('User settings load error:', error);
+        return;
+      }
+    
+      if (!data) {
+        document.getElementById('welcomeCard').style.display = 'block';
+        return;
+      }
+    
+      if (data.welcome_hidden === true) {
+        document.getElementById('welcomeCard').style.display = 'none';
+      } else {
+        document.getElementById('welcomeCard').style.display = 'block';
+      }
+    }
+    
   </script>
 </div>
 </body>
