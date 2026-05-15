@@ -886,10 +886,16 @@
     }
     
     async function updateWeeklySummary() {
+      const weekStart = getMondayOfCurrentWeek();
+      const weekEnd = getSundayOfCurrentWeek();
+      
       const { data, error } = await db
-        .from('history')
+        .from('task_logs')
         .select('*')
-        .order('date', { ascending: true });
+        .eq('user_id', currentUser.id)
+        .gte('log_date', weekStart)
+        .lte('log_date', weekEnd)
+        .order('log_date', { ascending: true });
 
       if (error) {
         console.log('Weekly history load error:', error);
@@ -1310,6 +1316,34 @@
       return `${year}-${month}-${day}`;
     }
 
+    function getMondayOfCurrentWeek() {
+      const today = new Date();
+      const day = today.getDay(); // Sunday = 0, Monday = 1
+      const diff = day === 0 ? -6 : 1 - day;
+    
+      const monday = new Date(today);
+      monday.setDate(today.getDate() + diff);
+    
+      const year = monday.getFullYear();
+      const month = String(monday.getMonth() + 1).padStart(2, '0');
+      const date = String(monday.getDate()).padStart(2, '0');
+    
+      return `${year}-${month}-${date}`;
+    }
+    
+    function getSundayOfCurrentWeek() {
+      const monday = new Date(getMondayOfCurrentWeek() + 'T00:00:00');
+    
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+    
+      const year = sunday.getFullYear();
+      const month = String(sunday.getMonth() + 1).padStart(2, '0');
+      const date = String(sunday.getDate()).padStart(2, '0');
+    
+      return `${year}-${month}-${date}`;
+    }
+    
     function isDailyTask(task) {
       return task.frequency === 'daily' || task.repeatDaily === true;
     }
