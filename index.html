@@ -1692,17 +1692,17 @@
         .forEach(taskName => {
         const taskLogs = grouped[taskName];
     
+        const last7 = taskLogs.slice(-7);
+
         let streak = 0;
-    
-        for (let i = taskLogs.length - 1; i >= 0; i--) {
-          if (taskLogs[i].status === 'completed') {
+        
+        for (let i = last7.length - 1; i >= 0; i--) {
+          if (last7[i].status === 'completed') {
             streak++;
           } else {
             break;
           }
         }
-    
-        const last5 = taskLogs.slice(-5);
     
         html += `
           <div style="padding:12px; border:1px solid #eee; border-radius:14px; margin-bottom:10px;">
@@ -1712,7 +1712,7 @@
             </div>
     
             <div style="margin-top:10px; font-size:18px;">
-              ${last5.map(log => log.status === 'completed' ? '✅' : '❌').join(' ')}
+              ${last7.map(log => log.status === 'completed' ? '✅' : '❌').join(' ')}
             </div>
           </div>
         `;
