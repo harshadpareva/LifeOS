@@ -319,6 +319,35 @@
     .heatmap-dot.missed {
       background: #ff5c7a;
     }
+
+    .dashboard-legend {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #666;
+      flex-wrap: wrap;
+    }
+    
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+    
+    .legend-dot.done {
+      background: #22c55e;
+    }
+    
+    .legend-dot.missed {
+      background: #ff5c7a;
+    }
+    
+    .legend-dot.empty {
+      background: #e5e5e5;
+    }
     
   </style>
 </head>
@@ -561,7 +590,16 @@
         </div>
       </div>
     
-      <h3 style="margin-top:20px;">Recent Activity</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+        <h3 style="margin:0;">Recent Activity</h3>
+        <span style="font-size:12px; color:#666;">Last 28 days</span>
+      </div>
+      
+      <div class="dashboard-legend">
+        <span><span class="legend-dot done"></span> Strong</span>
+        <span><span class="legend-dot missed"></span> Weak</span>
+        <span><span class="legend-dot empty"></span> No data</span>
+      </div>
       <div id="dashboardHeatmap"></div>
     </div>
 
