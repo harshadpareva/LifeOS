@@ -273,6 +273,52 @@
       color: #999;
       font-weight: normal;
     }
+
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    
+    .dashboard-stat {
+      background: #f6f7f9;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+    
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(14, 1fr);
+      gap: 5px;
+      margin-top: 10px;
+    }
+    
+    .heatmap-dot {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 5px;
+      background: #e5e5e5;
+    }
+    
+    .heatmap-dot.done {
+      background: #22c55e;
+    }
+    
+    .heatmap-dot.missed {
+      background: #ff5c7a;
+    }
     
   </style>
 </head>
@@ -475,7 +521,8 @@
 
       <button class="save-button" onclick="addTask()">Save Task</button>
     </div>
-    
+
+    <div class="button secondary-button" onclick="showHistoryDashboard()">History Dashboard</div>  
     <div class="button secondary-button" onclick="showHistory()">View History</div>
     <div class="button secondary-button" onclick="resetToday()">Reset Today</div>
 
@@ -489,7 +536,34 @@
       <div id="historyContent"></div>
     </div>
     
+    <div class="card add-form" id="historyDashboardBox">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>LifeOS History</h2>
+        <span onclick="closeHistoryDashboard()" style="font-size:12px; color:#999; cursor:pointer;">
+          Close
+        </span>
+      </div>
     
+      <div class="dashboard-stats">
+        <div class="dashboard-stat">
+          <div class="stat-number" id="dashboardCompleted">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+    
+        <div class="dashboard-stat">
+          <div class="stat-number" id="dashboardDays">0</div>
+          <div class="stat-label">Days Tracked</div>
+        </div>
+    
+        <div class="dashboard-stat">
+          <div class="stat-number" id="dashboardScore">0%</div>
+          <div class="stat-label">Consistency</div>
+        </div>
+      </div>
+    
+      <h3 style="margin-top:20px;">Recent Activity</h3>
+      <div id="dashboardHeatmap"></div>
+    </div>
 
   </div>
 
