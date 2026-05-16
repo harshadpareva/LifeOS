@@ -1893,6 +1893,85 @@
         document.getElementById('welcomeCard').style.display = 'block';
       }
     }
+
+    async function showHistoryDashboard() {
+      const dashboardBox = document.getElementById('historyDashboardBox');
+      const historyBox = document.getElementById('historyBox');
+    
+      if (historyBox) {
+        historyBox.style.display = 'none';
+      }
+    
+      if (dashboardBox.style.display === 'block') {
+        dashboardBox.style.display = 'none';
+        return;
+      }
+    
+      const { data, error } = await db
+        .from('task_logs')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('log_date', { ascending: true });
+    
+      if (error) {
+        console.log('History dashboard error:', error);
+        return;
+      }
+    
+      const logs = data || [];
+    
+      const completed = logs.filter(log => log.status === 'completed').length;
+      const total = logs.length;
+      const score = total === 0 ? 0 : Math.round((completed / total) * 100);
+    
+      const uniqueDays = new Set(logs.map(log => log.log_date));
+    
+      document.getElementById('dashboardCompleted').textContent = completed;
+      document.getElementById('dashboardDays').textContent = uniqueDays.size;
+      document.getElementById('dashboardScore').textContent = score + '%';
+    
+      const heatmapBox = document.getElementById('dashboardHeatmap');
+    
+      let heatmapHtml = '<div class="heatmap-grid">';
+    
+      for (let i = 27; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+    
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+    
+        const dateISO = `${year}-${month}-${day}`;
+    
+        const dayLogs = logs.filter(log => log.log_date === dateISO);
+        const dayCompleted = dayLogs.filter(log => log.status === 'completed').length;
+        const dayMissed = dayLogs.filter(log => log.status === 'missed').length;
+    
+        let dotClass = '';
+    
+        if (dayLogs.length > 0) {
+          const dayScore = Math.round((dayCompleted / dayLogs.length) * 100);
+    
+          if (dayScore >= 70) {
+            dotClass = 'done';
+          } else {
+            dotClass = 'missed';
+          }
+        }
+    
+        heatmapHtml += `<div class="heatmap-dot ${dotClass}" title="${dateISO}: ${dayCompleted} completed, ${dayMissed} missed"></div>`;
+      }
+    
+      heatmapHtml += '</div>';
+    
+      heatmapBox.innerHTML = heatmapHtml;
+      dashboardBox.style.display = 'block';
+    }
+    
+    function closeHistoryDashboard() {
+      document.getElementById('historyDashboardBox').style.display = 'none';
+    }
     
   </script>
 </div>
