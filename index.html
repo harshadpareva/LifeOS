@@ -1672,52 +1672,65 @@
     }
 
     async function updateHabitInsights() {
-      const { data, error } = await db
+      const insightsBox = document.getElementById('habitInsights');
+      const insightsEmptyMessage = document.getElementById('insightsEmptyMessage');
+    
+      const { data: logsData, error: logsError } = await db
         .from('task_logs')
         .select('*')
         .eq('user_id', currentUser.id)
         .order('log_date', { ascending: true });
     
-      if (error) {
-        console.log('Habit insights error:', error);
+      if (logsError) {
+        console.log('Habit insights logs error:', logsError);
         return;
       }
     
-      const allLogs = data || [];
+      const { data: taskData, error: taskError } = await db
+        .from('tasks')
+        .select('*')
+        .eq('user_id', currentUser.id);
+    
+      if (taskError) {
+        console.log('Habit insights tasks error:', taskError);
+        return;
+      }
+    
+      const logs = logsData || [];
+      const allTasks = taskData || [];
+    
       const recurringNames = new Set();
-      const counts = {};
-      
-      allLogs.forEach(log => {
-        counts[log.task_name] = (counts[log.task_name] || 0) + 1;
-      
+    
+      allTasks.forEach(task => {
+        if (task.frequency === 'daily' || task.frequency === 'weekly' || task.repeatDaily === true) {
+          recurringNames.add(task.name);
+        }
+      });
+    
+      logs.forEach(log => {
         if (log.frequency === 'daily' || log.frequency === 'weekly') {
           recurringNames.add(log.task_name);
         }
       });
-      
-      Object.keys(counts).forEach(taskName => {
-        if (counts[taskName] > 1) {
-          recurringNames.add(taskName);
+    
+      const recurringLogs = logs.filter(log => recurringNames.has(log.task_name));
+    
+      if (recurringLogs.length === 0) {
+        if (insightsEmptyMessage) {
+          insightsEmptyMessage.style.display = 'block';
         }
-      });
-      
-      const logs = allLogs.filter(log => recurringNames.has(log.task_name));
     
-      const insightsBox = document.getElementById('habitInsights');
-    
-      const insightsEmptyMessage = document.getElementById('insightsEmptyMessage');
-      
-      if (logs.length === 0) {
-        insightsEmptyMessage.style.display = 'block';
         insightsBox.innerHTML = '';
         return;
       }
-      
-      insightsEmptyMessage.style.display = 'none';
+    
+      if (insightsEmptyMessage) {
+        insightsEmptyMessage.style.display = 'none';
+      }
     
       const grouped = {};
     
-      logs.forEach(log => {
+      recurringLogs.forEach(log => {
         if (!grouped[log.task_name]) {
           grouped[log.task_name] = [];
         }
@@ -1731,40 +1744,39 @@
         .sort((a, b) => {
           const logsA = grouped[a];
           const logsB = grouped[b];
-      
+    
           const timeA = [...logsA].reverse().find(log => log.plannedTime)?.plannedTime || '99:99';
           const timeB = [...logsB].reverse().find(log => log.plannedTime)?.plannedTime || '99:99';
-      
+    
           return timeA.localeCompare(timeB);
         })
         .forEach(taskName => {
-        const taskLogs = grouped[taskName];
+          const taskLogs = grouped[taskName];
+          const last7 = taskLogs.slice(-7);
     
-        const last7 = taskLogs.slice(-7);
-
-        let streak = 0;
-        
-        for (let i = last7.length - 1; i >= 0; i--) {
-          if (last7[i].status === 'completed') {
-            streak++;
-          } else {
-            break;
+          let streak = 0;
+    
+          for (let i = last7.length - 1; i >= 0; i--) {
+            if (last7[i].status === 'completed') {
+              streak++;
+            } else {
+              break;
+            }
           }
-        }
     
-        html += `
-          <div style="padding:12px; border:1px solid #eee; border-radius:14px; margin-bottom:10px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong>${taskName}</strong>
-              <span style="font-size:13px;">🔥 ${streak} day streak</span>
-            </div>
+          html += `
+            <div style="padding:12px; border:1px solid #eee; border-radius:14px; margin-bottom:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                <strong>${taskName}</strong>
+                <span style="font-size:13px;">🔥 ${streak} day streak</span>
+              </div>
     
-            <div style="margin-top:10px; font-size:18px;">
-              ${last7.map(log => log.status === 'completed' ? '✅' : '❌').join(' ')}
+              <div style="margin-top:10px; font-size:18px;">
+                ${last7.map(log => log.status === 'completed' ? '✅' : '❌').join(' ')}
+              </div>
             </div>
-          </div>
-        `;
-      });
+          `;
+        });
     
       insightsBox.innerHTML = html;
     }
