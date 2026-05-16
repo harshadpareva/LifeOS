@@ -380,6 +380,10 @@
       
       <div id="weeklySummaryContent" style="display:none;">
 
+      <div id="weeklyEmptyMessage" class="task-meta" style="display:none; margin-bottom:12px;">
+        No weekly data yet. Complete tasks this week to see your summary.
+      </div>  
+
       <div class="summary">
         <span>Days Tracked</span>
         <span id="weeklyDays">0</span>
@@ -909,6 +913,14 @@
       const last7Days = history.slice(-7);
 
       const daysTracked = last7Days.length;
+
+      const weeklyEmptyMessage = document.getElementById('weeklyEmptyMessage');
+      
+      if (daysTracked === 0) {
+        weeklyEmptyMessage.style.display = 'block';
+      } else {
+        weeklyEmptyMessage.style.display = 'none';
+      }
 
       let totalScore = 0;
       let totalMissed = 0;
@@ -1662,10 +1674,15 @@
     
       const insightsBox = document.getElementById('habitInsights');
     
+      const insightsEmptyMessage = document.getElementById('insightsEmptyMessage');
+      
       if (logs.length === 0) {
-        insightsBox.innerHTML = '<div class="task-meta">No insights yet</div>';
+        insightsEmptyMessage.style.display = 'block';
+        insightsBox.innerHTML = '';
         return;
       }
+      
+      insightsEmptyMessage.style.display = 'none';
     
       const grouped = {};
     
