@@ -564,8 +564,8 @@
         });
 
       for (const task of historyTasks) {
-        if (task.status === 'missed') {
-          await saveTaskLog(task, savedDate, 'missed');
+        if (task.status === 'completed' || task.status === 'missed') {
+          await saveTaskLog(task, savedDate, task.status);
         }
       }
       
@@ -895,7 +895,7 @@
     async function updateWeeklySummary() {
       const weekStart = getMondayOfCurrentWeek();
       const weekEnd = getSundayOfCurrentWeek();
-      
+    
       const { data, error } = await db
         .from('task_logs')
         .select('*')
@@ -903,81 +903,75 @@
         .gte('log_date', weekStart)
         .lte('log_date', weekEnd)
         .order('log_date', { ascending: true });
-
+    
       if (error) {
-        console.log('Weekly history load error:', error);
+        console.log('Weekly summary load error:', error);
         return;
       }
-
-      const history = data || [];
-      const last7Days = history.slice(-7);
-
-      const daysTracked = last7Days.length;
-
+    
+      const logs = data || [];
       const weeklyEmptyMessage = document.getElementById('weeklyEmptyMessage');
-      
-      if (daysTracked === 0) {
-        weeklyEmptyMessage.style.display = 'block';
-      } else {
+    
+      if (logs.length === 0) {
+        if (weeklyEmptyMessage) {
+          weeklyEmptyMessage.style.display = 'block';
+        }
+    
+        document.getElementById('weeklyDays').textContent = '0';
+        document.getElementById('weeklyAverage').textContent = '0%';
+        document.getElementById('weeklyMissed').textContent = '0';
+        document.getElementById('weeklyBest').textContent = '0%';
+        document.getElementById('weeklyWorst').textContent = '0%';
+        document.getElementById('weeklyStreak').textContent = '0 days';
+        document.getElementById('weeklyChart').innerHTML = '';
+    
+        return;
+      }
+    
+      if (weeklyEmptyMessage) {
         weeklyEmptyMessage.style.display = 'none';
       }
-
+    
+      const grouped = {};
+    
+      logs.forEach(log => {
+        if (!grouped[log.log_date]) {
+          grouped[log.log_date] = [];
+        }
+    
+        grouped[log.log_date].push(log);
+      });
+    
+      const dates = Object.keys(grouped).sort();
+    
       let totalScore = 0;
       let totalMissed = 0;
       let bestScore = 0;
       let worstScore = 100;
       let streak = 0;
-
-      last7Days.forEach(day => {
-        const dayTasks = day.tasks || [];
-
-        const completed = dayTasks.filter(t => t.status === 'completed').length;
-        const missed = dayTasks.filter(t => t.status === 'missed').length;
-
-        const score = dayTasks.length === 0 ? 0 : Math.round((completed / dayTasks.length) * 100);
-
+      let chartHtml = '';
+    
+      dates.forEach(date => {
+        const dayLogs = grouped[date];
+        const completed = dayLogs.filter(log => log.status === 'completed').length;
+        const missed = dayLogs.filter(log => log.status === 'missed').length;
+        const total = dayLogs.length;
+    
+        const score = total === 0 ? 0 : Math.round((completed / total) * 100);
+    
         totalScore += score;
         totalMissed += missed;
-
+    
         if (score > bestScore) {
           bestScore = score;
         }
-
+    
         if (score < worstScore) {
           worstScore = score;
         }
-      });
-
-      for (let i = last7Days.length - 1; i >= 0; i--) {
-        const dayTasks = last7Days[i].tasks || [];
-        const completed = dayTasks.filter(t => t.status === 'completed').length;
-        const score = dayTasks.length === 0 ? 0 : Math.round((completed / dayTasks.length) * 100);
-
-        if (score >= 70) {
-          streak++;
-        } else {
-          break;
-        }
-      }
-
-      const avgScore = daysTracked === 0 ? 0 : Math.round(totalScore / daysTracked);
-
-      document.getElementById('weeklyDays').textContent = daysTracked;
-      document.getElementById('weeklyAverage').textContent = avgScore + '%';
-      document.getElementById('weeklyMissed').textContent = totalMissed;
-      document.getElementById('weeklyBest').textContent = daysTracked === 0 ? '0%' : bestScore + '%';
-      document.getElementById('weeklyWorst').textContent = daysTracked === 0 ? '0%' : worstScore + '%';
-      document.getElementById('weeklyStreak').textContent = streak + ' days';
-
-      let chartHtml = '';
-
-      last7Days.forEach(day => {
-        const dayTasks = day.tasks || [];
-        const completed = dayTasks.filter(t => t.status === 'completed').length;
-        const score = dayTasks.length === 0 ? 0 : Math.round((completed / dayTasks.length) * 100);
-
+    
         let barColor = '#111';
-
+    
         if (score < 50) {
           barColor = 'red';
         } else if (score <= 70) {
@@ -985,11 +979,11 @@
         } else {
           barColor = 'green';
         }
-
+    
         chartHtml += `
           <div style="margin-bottom:10px;">
             <div style="font-size:12px; margin-bottom:4px;">
-              ${day.date.split('-').reverse().slice(0,2).join('/')} — ${score}%
+              ${date.split('-').reverse().slice(0, 2).join('/')} — ${score}%
             </div>
             <div style="background:#eee; border-radius:8px; overflow:hidden;">
               <div style="width:${score}%; background:${barColor}; color:white; padding:4px; font-size:11px;">
@@ -999,7 +993,28 @@
           </div>
         `;
       });
-
+    
+      for (let i = dates.length - 1; i >= 0; i--) {
+        const dayLogs = grouped[dates[i]];
+        const completed = dayLogs.filter(log => log.status === 'completed').length;
+        const score = dayLogs.length === 0 ? 0 : Math.round((completed / dayLogs.length) * 100);
+    
+        if (score >= 70) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+    
+      const daysTracked = dates.length;
+      const avgScore = Math.round(totalScore / daysTracked);
+    
+      document.getElementById('weeklyDays').textContent = daysTracked;
+      document.getElementById('weeklyAverage').textContent = avgScore + '%';
+      document.getElementById('weeklyMissed').textContent = totalMissed;
+      document.getElementById('weeklyBest').textContent = bestScore + '%';
+      document.getElementById('weeklyWorst').textContent = worstScore + '%';
+      document.getElementById('weeklyStreak').textContent = streak + ' days';
       document.getElementById('weeklyChart').innerHTML = chartHtml;
     }
     
@@ -1668,9 +1683,25 @@
         return;
       }
     
-      const logs = (data || []).filter(log => {
-        return log.frequency === 'daily' || log.frequency === 'weekly';
+      const allLogs = data || [];
+      const recurringNames = new Set();
+      const counts = {};
+      
+      allLogs.forEach(log => {
+        counts[log.task_name] = (counts[log.task_name] || 0) + 1;
+      
+        if (log.frequency === 'daily' || log.frequency === 'weekly') {
+          recurringNames.add(log.task_name);
+        }
       });
+      
+      Object.keys(counts).forEach(taskName => {
+        if (counts[taskName] > 1) {
+          recurringNames.add(taskName);
+        }
+      });
+      
+      const logs = allLogs.filter(log => recurringNames.has(log.task_name));
     
       const insightsBox = document.getElementById('habitInsights');
     
