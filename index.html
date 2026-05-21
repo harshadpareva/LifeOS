@@ -2016,6 +2016,33 @@
       }
     }
 
+    async function loadActivityHistoryOptions() {
+      const select = document.getElementById('activityHistorySelect');
+    
+      if (!select) {
+        return;
+      }
+    
+      const { data, error } = await db
+        .from('task_logs')
+        .select('task_name')
+        .eq('user_id', currentUser.id)
+        .order('task_name', { ascending: true });
+    
+      if (error) {
+        console.log('Activity options load error:', error);
+        return;
+      }
+    
+      const names = [...new Set((data || []).map(log => log.task_name))];
+    
+      select.innerHTML = '<option value="">Select activity</option>';
+    
+      names.forEach(name => {
+        select.innerHTML += `<option value="${name}">${name}</option>`;
+      });
+    }
+
     function switchHistoryView(view) {
       const daysView = document.getElementById('historyDaysView');
       const activityView = document.getElementById('historyActivityView');
