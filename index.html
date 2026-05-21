@@ -348,6 +348,28 @@
     .legend-dot.empty {
       background: #e5e5e5;
     }
+
+    .history-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .history-tab {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 10px;
+      background: #f2f2f2;
+      color: #555;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .history-tab.active {
+      background: #111;
+      color: white;
+    }
     
   </style>
 </head>
@@ -562,7 +584,29 @@
           Clear
         </span>
       </div>
-      <div id="historyContent"></div>
+      <div class="history-tabs">
+        <button class="history-tab active" id="historyDaysTab" onclick="switchHistoryView('days')">
+          By Days
+        </button>
+      
+        <button class="history-tab" id="historyActivityTab" onclick="switchHistoryView('activity')">
+          By Activity
+        </button>
+      </div>
+      
+      <div id="historyDaysView">
+        <div id="historyContent"></div>
+      </div>
+      
+      <div id="historyActivityView" style="display:none;">
+        <select id="activityHistorySelect" onchange="loadActivityHistory()" style="margin-bottom:14px;">
+          <option value="">Select activity</option>
+        </select>
+      
+        <div id="activityHistoryContent" class="task-meta">
+          Select an activity to see its history.
+        </div>
+      </div>
     </div>
     
     <div class="card add-form" id="historyDashboardBox">
@@ -1972,6 +2016,27 @@
       }
     }
 
+    function switchHistoryView(view) {
+      const daysView = document.getElementById('historyDaysView');
+      const activityView = document.getElementById('historyActivityView');
+      const daysTab = document.getElementById('historyDaysTab');
+      const activityTab = document.getElementById('historyActivityTab');
+    
+      if (view === 'days') {
+        daysView.style.display = 'block';
+        activityView.style.display = 'none';
+    
+        daysTab.classList.add('active');
+        activityTab.classList.remove('active');
+      } else {
+        daysView.style.display = 'none';
+        activityView.style.display = 'block';
+    
+        daysTab.classList.remove('active');
+        activityTab.classList.add('active');
+      }
+    }
+    
     async function showHistoryDashboard() {
       const dashboardBox = document.getElementById('historyDashboardBox');
       const historyBox = document.getElementById('historyBox');
