@@ -644,6 +644,10 @@
         <span><span class="legend-dot missed"></span> Weak</span>
         <span><span class="legend-dot empty"></span> No data</span>
       </div>
+      <div id="dashboardDayDetail" class="task-meta" style="margin-top:12px; margin-bottom:10px;">
+        Tap a day to see details.
+      </div>
+      
       <div id="dashboardHeatmap"></div>
     </div>
 
@@ -2200,6 +2204,19 @@
         Actual: ${actualTime}
       `;
     }
+
+    function showDashboardDayDetail(date, total, completed, missed) {
+      const detailBox = document.getElementById('dashboardDayDetail');
+    
+      if (!detailBox) {
+        return;
+      }
+    
+      detailBox.innerHTML = `
+        <strong>${date}</strong> — 
+        Total: ${total} | Completed: ${completed} | Missed: ${missed}
+      `;
+    }
     
     async function showHistoryDashboard() {
       const dashboardBox = document.getElementById('historyDashboardBox');
@@ -2267,7 +2284,13 @@
           }
         }
     
-        heatmapHtml += `<div class="heatmap-dot ${dotClass}" title="${dateISO}: ${dayCompleted} completed, ${dayMissed} missed"></div>`;
+        heatmapHtml += `
+          <div 
+            class="heatmap-dot ${dotClass}" 
+            title="${dateISO}: ${dayCompleted} completed, ${dayMissed} missed"
+            onclick="showDashboardDayDetail('${dateISO}', ${dayLogs.length}, ${dayCompleted}, ${dayMissed})">
+          </div>
+        `;
       }
     
       heatmapHtml += '</div>';
