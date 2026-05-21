@@ -2027,23 +2027,131 @@
     
       const { data, error } = await db
         .from('task_logs')
-        .select('task_name, frequency')
+        .select('task_name, frequency, plannedTime')
         .eq('user_id', currentUser.id)
-        .in('frequency', ['daily', 'weekly'])
-        .order('task_name', { ascending: true });
+        .in('frequency', ['daily', 'weekly']);
     
       if (error) {
         console.log('Activity options load error:', error);
         return;
       }
     
-      const names = [...new Set((data || []).map(log => log.task_name))];
+      const activityMap = {};
+    
+      (data || []).forEach(log => {
+        if (!activityMap[log.task_name]) {
+          activityMap[log.task_name] = {
+            name: log.task_name,
+            plannedTime: log.plannedTime || '99:99'
+          };
+        }
+    
+        if (log.plannedTime && log.plannedTime < activityMap[log.task_name].plannedTime) {
+          activityMap[log.task_name].plannedTime = log.plannedTime;
+        }
+      });
+    
+      const activities = Object.values(activityMap).sort((a, b) => {
+        return a.plannedTime.localeCompare(b.plannedTime);
+      });
     
       select.innerHTML = '<option value="">Select activity</option>';
     
-      names.forEach(name => {
-        select.innerHTML += `<option value="${name}">${name}</option>`;
+      activities.forEach(activity => {
+        select.innerHTML += `<option value="${activity.name}">${activity.name}</option>`;
       });
+    }
+
+    async function loadActivityHistory() {
+      const selectedActivity = document.getElementById('activityHistorySelect').value;
+      const content = document.getElementById('activityHistoryContent');
+    
+      if (!selectedActivity) {
+        content.innerHTML = 'Select an activity to see its history.';
+        return;
+      }
+    
+      const { data, error } = await db
+        .from('task_logs')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .eq('task_name', selectedActivity)
+        .order('log_date', { ascending: true });
+    
+      if (error) {
+        console.log('Activity history load error:', error);
+        content.innerHTML = 'Could not load activity history.';
+        return;
+      }
+    
+      const logs = data || [];
+    
+      if (logs.length === 0) {
+        content.innerHTML = 'No history found for this activity.';
+        return;
+      }
+    
+      const completed = logs.filter(log => log.status === 'completed').length;
+      const missed = logs.filter(log => log.status === 'missed').length;
+      const total = logs.length;
+      const successRate = total === 0 ? 0 : Math.round((completed / total) * 100);
+    
+      let streak = 0;
+    
+      for (let i = logs.length - 1; i >= 0; i--) {
+        if (logs[i].status === 'completed') {
+          streak++;
+        } else {
+          break;
+        }
+      }
+    
+      let html = `
+        <div style="padding:12px; border:1px solid #eee; border-radius:14px; margin-bottom:14px;">
+          <strong>${selectedActivity}</strong>
+          <div style="font-size:13px; color:#666; margin-top:6px;">
+            Completed: ${completed}/${total} • Missed: ${missed} • Success: ${successRate}% • 🔥 ${streak} day streak
+          </div>
+        </div>
+      `;
+    
+      const groupedByMonth = {};
+    
+      logs.forEach(log => {
+        const monthKey = log.log_date.slice(0, 7);
+    
+        if (!groupedByMonth[monthKey]) {
+          groupedByMonth[monthKey] = [];
+        }
+    
+        groupedByMonth[monthKey].push(log);
+      });
+    
+      Object.keys(groupedByMonth).reverse().forEach(month => {
+        const monthLogs = groupedByMonth[month];
+    
+        html += `
+          <div style="margin-bottom:16px;">
+            <strong>${month}</strong>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;">
+              ${monthLogs.map(log => {
+                const color = log.status === 'completed' ? '#22c55e' : '#ff5c7a';
+    
+                return `
+                  <div title="${log.log_date} - ${log.status}" style="
+                    width:18px;
+                    height:18px;
+                    border-radius:5px;
+                    background:${color};
+                  "></div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+    
+      content.innerHTML = html;
     }
 
     function switchHistoryView(view) {
