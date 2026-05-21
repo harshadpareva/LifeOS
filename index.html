@@ -624,33 +624,75 @@
         return;
       }
     
+      let dateToProcess = savedDate;
+      let safetyCount = 0;
+    
+      while (dateToProcess < today && safetyCount < 31) {
+        await processHistoryForDate(dateToProcess);
+        dateToProcess = getNextDateISO(dateToProcess);
+        safetyCount++;
+      }
+    
+      localStorage.setItem('lifeosDate', today);
+    }
+
+    function getNextDateISO(dateISO) {
+      const date = new Date(dateISO + 'T00:00:00');
+      date.setDate(date.getDate() + 1);
+    
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+    
+      return `${year}-${month}-${day}`;
+    }
+    
+    async function processHistoryForDate(dateISO) {
       const { data, error } = await db
         .from('tasks')
         .select('*')
         .eq('user_id', currentUser.id)
-        .or(`plannedDate.eq.${savedDate},date.eq.${savedDate},completedDate.eq.${savedDate},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly`);
+        .or(`plannedDate.eq.${dateISO},date.eq.${dateISO},completedDate.eq.${dateISO},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly`);
     
       if (error) {
-        console.log('Rollover load error:', error);
+        console.log('History process load error:', error);
         return;
       }
+    
+      const { data: existingLogs, error: existingError } = await db
+        .from('task_logs')
+        .select('task_id, log_date, status')
+        .eq('user_id', currentUser.id)
+        .eq('log_date', dateISO);
+    
+      if (existingError) {
+        console.log('Existing logs load error:', existingError);
+        return;
+      }
+    
+      const existingLogKeys = new Set(
+        (existingLogs || []).map(log => `${log.task_id}-${log.log_date}`)
+      );
     
       const historyTasks = (data || [])
         .filter(task => {
           const taskDate = task.plannedDate || task.date;
-          const daily = isDailyTask(task);
-          const weeklyDue = isWeeklyTask(task) && isWeeklyDueOnDate(task, savedDate);
-          const plannedThatDay = taskDate === savedDate;
-          const completedThatDay = task.completedDate === savedDate;
+          const createdDate = task.created_at ? task.created_at.slice(0, 10) : null;
     
-          return daily || weeklyDue || plannedThatDay || completedThatDay;
+          const existedOnDate = !createdDate || createdDate <= dateISO;
+          const daily = isDailyTask(task);
+          const weeklyDue = isWeeklyTask(task) && isWeeklyDueOnDate(task, dateISO);
+          const plannedThatDay = taskDate === dateISO;
+          const completedThatDay = task.completedDate === dateISO;
+    
+          return completedThatDay || (existedOnDate && (daily || weeklyDue || plannedThatDay));
         })
         .map(task => {
           const taskDate = task.plannedDate || task.date;
           const daily = isDailyTask(task);
-          const weeklyDue = isWeeklyTask(task) && isWeeklyDueOnDate(task, savedDate);
-          const plannedThatDay = taskDate === savedDate;
-          const completedThatDay = task.completedDate === savedDate;
+          const weeklyDue = isWeeklyTask(task) && isWeeklyDueOnDate(task, dateISO);
+          const plannedThatDay = taskDate === dateISO;
+          const completedThatDay = task.completedDate === dateISO;
           const dueThatDay = daily || weeklyDue || plannedThatDay;
     
           if (completedThatDay) {
@@ -672,16 +714,14 @@
     
           return task;
         });
-
+    
       for (const task of historyTasks) {
-        if (task.status === 'completed' || task.status === 'missed') {
-          await saveTaskLog(task, savedDate, task.status);
+        const key = `${task.id}-${dateISO}`;
+    
+        if (!existingLogKeys.has(key) && (task.status === 'completed' || task.status === 'missed')) {
+          await saveTaskLog(task, dateISO, task.status);
         }
       }
-      
-      await saveHistoryToSupabase(savedDate, historyTasks);
-    
-      localStorage.setItem('lifeosDate', today);
     }
     
     let tasks = [];
