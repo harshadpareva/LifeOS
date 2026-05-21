@@ -2113,6 +2113,10 @@
             Completed: ${completed}/${total} • Missed: ${missed} • Success: ${successRate}% • 🔥 ${streak} day streak
           </div>
         </div>
+      
+        <div id="activityLogDetail" class="task-meta" style="margin-bottom:14px;">
+          Tap a dot to see details.
+        </div>
       `;
     
       const groupedByMonth = {};
@@ -2138,12 +2142,17 @@
                 const color = log.status === 'completed' ? '#22c55e' : '#ff5c7a';
     
                 return `
-                  <div title="${log.log_date} - ${log.status}" style="
-                    width:18px;
-                    height:18px;
-                    border-radius:5px;
-                    background:${color};
-                  "></div>
+                  <div 
+                    onclick="showActivityLogDetail('${log.log_date}', '${log.status}', '${log.plannedTime || '—'}', '${log.actualTime || '—'}')"
+                    title="${log.log_date} - ${log.status}" 
+                    style="
+                      width:18px;
+                      height:18px;
+                      border-radius:5px;
+                      background:${color};
+                      cursor:pointer;
+                    ">
+                  </div>
                 `;
               }).join('')}
             </div>
@@ -2173,6 +2182,23 @@
         daysTab.classList.remove('active');
         activityTab.classList.add('active');
       }
+    }
+
+    function showActivityLogDetail(date, status, plannedTime, actualTime) {
+      const detailBox = document.getElementById('activityLogDetail');
+    
+      if (!detailBox) {
+        return;
+      }
+    
+      const icon = status === 'completed' ? '✅' : '❌';
+    
+      detailBox.innerHTML = `
+        <strong>${icon} ${date}</strong><br>
+        Status: ${status}<br>
+        Planned: ${plannedTime}<br>
+        Actual: ${actualTime}
+      `;
     }
     
     async function showHistoryDashboard() {
