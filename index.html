@@ -2027,8 +2027,9 @@
     
       const { data, error } = await db
         .from('task_logs')
-        .select('task_name')
+        .select('task_name, frequency')
         .eq('user_id', currentUser.id)
+        .in('frequency', ['daily', 'weekly'])
         .order('task_name', { ascending: true });
     
       if (error) {
