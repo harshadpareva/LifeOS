@@ -370,6 +370,17 @@
       background: #111;
       color: white;
     }
+
+    #dashboardDayDetail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      background: #f6f7f9;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
     
   </style>
 </head>
@@ -2212,9 +2223,19 @@
         return;
       }
     
+      if (total === 0) {
+        detailBox.innerHTML = `
+          <span style="font-weight:bold;">${date}</span>
+          <span style="color:#666;">No records saved for this day</span>
+        `;
+        return;
+      }
+    
       detailBox.innerHTML = `
-        <strong>${date}</strong> — 
-        Total: ${total} | Completed: ${completed} | Missed: ${missed}
+        <span style="font-weight:bold;">${date}</span>
+        <span>Total: ${total}</span>
+        <span>Completed: ${completed}</span>
+        <span>Missed: ${missed}</span>
       `;
     }
     
