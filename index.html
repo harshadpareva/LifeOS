@@ -2281,6 +2281,18 @@
     
       return `${hours}:${minutes}`;
     }
+
+    function showActivityTimePoint(date, plannedTime, actualTime) {
+      const detailBox = document.getElementById('activityTimeChartDetail');
+    
+      if (!detailBox) {
+        return;
+      }
+    
+      detailBox.innerHTML = `
+        <strong>${date}</strong> — Planned: ${plannedTime} | Actual: ${actualTime}
+      `;
+    }
     
     function buildActivityTimeChart(logs) {
       const chartLogs = logs
@@ -2350,7 +2362,14 @@
           return '';
         }
     
-        return `<circle cx="${getX(index)}" cy="${getY(value)}" r="3" fill="#111"></circle>`;
+        return `<circle 
+          cx="${getX(index)}" 
+          cy="${getY(value)}" 
+          r="4" 
+          fill="#111"
+          style="cursor:pointer;"
+          onclick="showActivityTimePoint('${chartLogs[index].log_date}', '${chartLogs[index].plannedTime || '—'}', '${chartLogs[index].actualTime || '—'}')">
+        </circle>`;
       }).join('');
     
       const actualDots = actualValues.map((value, index) => {
@@ -2358,7 +2377,14 @@
           return '';
         }
     
-        return `<circle cx="${getX(index)}" cy="${getY(value)}" r="3" fill="#22c55e"></circle>`;
+        return `<circle 
+          cx="${getX(index)}" 
+          cy="${getY(value)}" 
+          r="4" 
+          fill="#22c55e"
+          style="cursor:pointer;"
+          onclick="showActivityTimePoint('${chartLogs[index].log_date}', '${chartLogs[index].plannedTime || '—'}', '${chartLogs[index].actualTime || '—'}')">
+        </circle>`;
       }).join('');
     
       return `
@@ -2373,6 +2399,10 @@
           <div class="activity-chart-legend">
             <span><span class="legend-line planned"></span>Planned</span>
             <span><span class="legend-line actual"></span>Actual</span>
+          </div>
+
+          <div id="activityTimeChartDetail" class="task-meta" style="margin-bottom:8px;">
+            Tap a point to see details.
           </div>
     
           <svg viewBox="0 0 ${width} ${height}" style="width:100%; max-width:420px; background:white; border-radius:14px; padding:6px;">
