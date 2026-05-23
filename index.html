@@ -1573,6 +1573,17 @@
       return `${year}-${month}-${day}`;
     }
 
+    function getYesterdayISO() {
+      const date = new Date();
+      date.setDate(date.getDate() - 1);
+    
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+    
+      return `${year}-${month}-${day}`;
+    }
+
     function getMondayOfCurrentWeek() {
       const today = new Date();
       const day = today.getDay(); // Sunday = 0, Monday = 1
@@ -1650,6 +1661,109 @@
 
       document.getElementById('historyContent').innerHTML = 'No history yet';
       updateWeeklySummary();
+    }
+
+    async function showReviewYesterday() {
+      const reviewBox = document.getElementById('reviewYesterdayBox');
+      const reviewContent = document.getElementById('reviewYesterdayContent');
+    
+      document.getElementById('historyBox').style.display = 'none';
+      document.getElementById('historyDashboardBox').style.display = 'none';
+    
+      if (reviewBox.style.display === 'block') {
+        reviewBox.style.display = 'none';
+        return;
+      }
+    
+      const yesterday = getYesterdayISO();
+    
+      const { data, error } = await db
+        .from('task_logs')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .eq('log_date', yesterday)
+        .eq('status', 'missed')
+        .order('plannedTime', { ascending: true });
+    
+      if (error) {
+        console.log('Review yesterday load error:', error);
+        reviewContent.innerHTML = 'Could not load yesterday.';
+        reviewBox.style.display = 'block';
+        return;
+      }
+    
+      const missedLogs = data || [];
+    
+      if (missedLogs.length === 0) {
+        reviewContent.innerHTML = `
+          <div class="task-meta">
+            No missed tasks found for ${yesterday}.
+          </div>
+        `;
+        reviewBox.style.display = 'block';
+        return;
+      }
+    
+      let html = `
+        <div style="font-weight:bold; margin-bottom:10px;">
+          ${yesterday}
+        </div>
+      `;
+    
+      missedLogs.forEach(log => {
+        html += `
+          <div style="padding:12px; border:1px solid #eee; border-radius:14px; margin-bottom:10px;">
+            <strong>❌ ${log.task_name}</strong>
+            <div class="task-meta">
+              Planned: ${log.plannedTime || '—'}
+            </div>
+    
+            <div 
+              class="task-action primary" 
+              style="display:inline-block; margin-top:8px;"
+              onclick="markYesterdayCompleted('${log.id}')">
+              Mark Completed
+            </div>
+          </div>
+        `;
+      });
+    
+      reviewContent.innerHTML = html;
+      reviewBox.style.display = 'block';
+    }
+    
+    function closeReviewYesterday() {
+      document.getElementById('reviewYesterdayBox').style.display = 'none';
+    }
+    
+    async function markYesterdayCompleted(logId) {
+      const actualTime = prompt('Actual time? Use HH:MM or leave blank');
+    
+      const updateData = {
+        status: 'completed'
+      };
+    
+      if (actualTime) {
+        updateData.actualTime = actualTime;
+      }
+    
+      const { error } = await db
+        .from('task_logs')
+        .update(updateData)
+        .eq('id', logId)
+        .eq('user_id', currentUser.id);
+    
+      if (error) {
+        console.log('Review yesterday update error:', error);
+        alert('Could not update task.');
+        return;
+      }
+    
+      await showReviewYesterday();
+      await showReviewYesterday();
+    
+      updateWeeklySummary();
+      updateHabitInsights();
     }
 
     async function loadUpcomingTasks() {
