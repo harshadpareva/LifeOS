@@ -989,6 +989,29 @@
     
       return `${hours}:${minutes}`;
     }
+
+    function getTimeDifferenceLabel(plannedTime, actualTime) {
+      const planned = timeToMinutes(plannedTime);
+      const actual = timeToMinutes(actualTime);
+    
+      if (planned === null || actual === null) {
+        return 'Difference: —';
+      }
+    
+      const diff = actual - planned;
+    
+      if (diff === 0) {
+        return 'On time';
+      }
+    
+      const absDiff = Math.abs(diff);
+    
+      if (diff > 0) {
+        return `${absDiff} min late`;
+      }
+    
+      return `${absDiff} min early`;
+    }
     
     function renderTasks() {
       document.getElementById('importantTasks').innerHTML = '';
@@ -2289,8 +2312,10 @@
         return;
       }
     
+      const difference = getTimeDifferenceLabel(plannedTime, actualTime);
+    
       detailBox.innerHTML = `
-        <strong>${date}</strong> — Planned: ${plannedTime} | Actual: ${actualTime}
+        <strong>${date}</strong> — Planned: ${plannedTime} | Actual: ${actualTime} | ${difference}
       `;
     }
     
