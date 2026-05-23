@@ -2320,8 +2320,8 @@
       }
     
       const width = 340;
-      const height = 180;
-      const padding = 30;
+      const height = 160;
+      const padding = 28;
     
       function getX(index) {
         if (chartLogs.length === 1) {
@@ -2363,9 +2363,11 @@
     
       return `
         <div class="activity-chart-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <strong>Planned vs Actual Time</strong>
-            <span class="task-meta">Last ${chartLogs.length} records</span>
+          <div class="activity-chart-header">
+            <div>
+              <div class="activity-chart-title">Planned vs Actual Time</div>
+              <div class="activity-chart-subtitle">Last ${chartLogs.length} records</div>
+            </div>
           </div>
     
           <div class="activity-chart-legend">
