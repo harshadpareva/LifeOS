@@ -584,8 +584,9 @@
       <button class="save-button" onclick="addTask()">Save Task</button>
     </div>
 
-    <div class="button secondary-button" onclick="showHistoryDashboard()">History Dashboard</div>  
+    <div class="button secondary-button" onclick="showHistoryDashboard()">History Dashboard</div>
     <div class="button secondary-button" onclick="showHistory()">View History</div>
+    <div class="button secondary-button" onclick="showReviewYesterday()">Review Yesterday</div>
     <div class="button secondary-button" onclick="resetToday()">Reset Today</div>
 
     <div class="card add-form" id="historyBox">
@@ -619,7 +620,22 @@
         </div>
       </div>
     </div>
+
+    <div class="card add-form" id="reviewYesterdayBox">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Review Yesterday</h2>
+        <span onclick="closeReviewYesterday()" style="font-size:12px; color:#999; cursor:pointer;">
+          Close
+        </span>
+      </div>
     
+      <p class="task-meta">
+        Fix tasks you completed in real life but forgot to mark.
+      </p>
+    
+      <div id="reviewYesterdayContent"></div>
+    </div>  
+      
     <div class="card add-form" id="historyDashboardBox">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2>LifeOS History</h2>
