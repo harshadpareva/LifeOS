@@ -1078,7 +1078,7 @@
         return;
       }
     
-      const actualTime = getCurrentTime();
+      const actualTime = tasks[index].actualTime || getCurrentTime();
       const today = getTodayISO();
     
       const { data, error } = await db
@@ -1477,35 +1477,41 @@
     
     async function editActualTime(event, index) {
       event.stopPropagation();
-
-      const newTime = prompt('Enter actual completion time (example: 19:30)');
-
-      if (!newTime) {
+    
+      const newActualTime = prompt('Enter actual time HH:MM', tasks[index].actualTime || '');
+    
+      if (newActualTime === null) {
         return;
       }
-
-      tasks[index].actualTime = newTime;
-      tasks[index].status = 'completed';
-      tasks[index].completed = true;
-      tasks[index].completedDate = getTodayISO();
-
+    
+      tasks[index].actualTime = newActualTime || null;
+    
       const { error } = await db
         .from('tasks')
         .update({
-          actualTime: newTime,
-          status: 'completed',
-          completed: true,
-          completedDate: getTodayISO()
+          actualTime: tasks[index].actualTime
         })
         .eq('id', tasks[index].id)
         .eq('user_id', currentUser.id);
-
+    
       if (error) {
-        console.log('Edit actual time error:', error);
+        console.log('Actual time update error:', error);
         return;
       }
-
+    
+      if (tasks[index].status === 'completed' && tasks[index].completedDate) {
+        await db
+          .from('task_logs')
+          .update({
+            actualTime: tasks[index].actualTime
+          })
+          .eq('task_id', tasks[index].id)
+          .eq('log_date', tasks[index].completedDate)
+          .eq('user_id', currentUser.id);
+      }
+    
       renderTasks();
+      updateHabitInsights();
     }
 
     async function deleteTask(event, index) {
