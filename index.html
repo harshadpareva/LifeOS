@@ -1372,6 +1372,7 @@
       const frequency = document.getElementById('taskFrequency').value;
       const repeatDaily = frequency === 'daily';
       const taskDate = document.getElementById('taskDate').value || getTodayISO();
+      
       const daysOfWeek = frequency === 'custom' ? getSelectedCustomDays() : null;
 
       if (frequency === 'custom' && daysOfWeek.length === 0) {
@@ -2762,9 +2763,15 @@
     }
 
     function getSelectedCustomDays() {
-      const checkboxes = document.querySelectorAll('#customDaysBox input[type="checkbox"]:checked');
+      const selectedDays = [];
     
-      return Array.from(checkboxes).map(box => box.value);
+      document.querySelectorAll('#customDaysBox input[type="checkbox"]').forEach(box => {
+        if (box.checked) {
+          selectedDays.push(box.value);
+        }
+      });
+    
+      return selectedDays;
     }
     
     function closeHistoryDashboard() {
