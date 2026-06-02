@@ -914,14 +914,36 @@
       const { data, error } = await db
         .from('tasks')
         .select('*')
-        .or(`plannedDate.eq.${getTodayISO()},completedDate.eq.${getTodayISO()},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly`)
+        .eq('user_id', currentUser.id)
+        .or(`plannedDate.eq.${getTodayISO()},completedDate.eq.${getTodayISO()},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly,frequency.eq.custom`);
 
       if (error) {
         console.log('Load error:', error);
         return;
       }
 
-      tasks = (data || [])
+      tasks = (data || []).filter(task => {
+        const today = getTodayISO();
+        const taskDate = task.plannedDate || task.date;
+      
+        if (task.completedDate === today) {
+          return true;
+        }
+      
+        if (task.frequency === 'custom') {
+          return isCustomDayTask(task, today);
+        }
+      
+        if (task.frequency === 'daily' || task.repeatDaily === true) {
+          return true;
+        }
+      
+        if (task.frequency === 'weekly') {
+          return true;
+        }
+      
+        return taskDate === today;
+      });
         .filter(task => {
           if (isWeeklyTask(task)) {
             return isWeeklyDue(task);
