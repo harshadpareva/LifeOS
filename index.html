@@ -432,6 +432,25 @@
     .legend-line.actual {
       background: #22c55e;
     }
+
+    .day-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    
+    .day-selector label {
+      background: #f2f2f2;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    
+    .day-selector input {
+      margin-right: 4px;
+    }
     
   </style>
 </head>
@@ -626,11 +645,26 @@
       <input type="time" id="plannedTime" style="margin-bottom:10px;">
 
       <label style="font-size:13px; color:#666;">Frequency</label>
-      <select id="taskFrequency" style="margin-bottom:10px;">
+      <select id="taskFrequency" style="margin-bottom:10px;" onchange="toggleCustomDays()">
         <option value="once">One-time</option>
         <option value="daily">Daily</option>
         <option value="weekly">Weekly</option>
+        <option value="custom">Custom days</option>
       </select>
+      
+      <div id="customDaysBox" style="display:none; margin-bottom:12px;">
+        <label style="font-size:13px; color:#666;">Select days</label>
+      
+        <div class="day-selector">
+          <label><input type="checkbox" value="mon"> Mon</label>
+          <label><input type="checkbox" value="tue"> Tue</label>
+          <label><input type="checkbox" value="wed"> Wed</label>
+          <label><input type="checkbox" value="thu"> Thu</label>
+          <label><input type="checkbox" value="fri"> Fri</label>
+          <label><input type="checkbox" value="sat"> Sat</label>
+          <label><input type="checkbox" value="sun"> Sun</label>
+        </div>
+      </div>
 
       <button class="save-button" onclick="addTask()">Save Task</button>
     </div>
@@ -2611,6 +2645,17 @@
         <span>Completed: ${completed}</span>
         <span>Missed: ${missed}</span>
       `;
+    }
+
+    function toggleCustomDays() {
+      const frequency = document.getElementById('taskFrequency').value;
+      const customDaysBox = document.getElementById('customDaysBox');
+    
+      if (frequency === 'custom') {
+        customDaysBox.style.display = 'block';
+      } else {
+        customDaysBox.style.display = 'none';
+      }
     }
     
     async function showHistoryDashboard() {
