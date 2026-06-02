@@ -1976,30 +1976,17 @@
     }
     
     async function saveTaskToSupabase(task) {
+      console.log('Saving task to Supabase:', task);
+    
       const { data, error } = await db
         .from('tasks')
-        .insert([
-          {
-            name: task.name,
-            category: task.category,
-            status: task.status,
-            completed: task.completed,
-            plannedTime: task.plannedTime,
-            actualTime: task.actualTime,
-            repeatDaily: task.repeatDaily,
-            frequency: task.frequency,
-            days_of_week: task.days_of_week,
-            plannedDate: task.plannedDate,
-            completedDate: task.completedDate,
-            date: task.date,
-            user_id: task.user_id
-          }
-        ])
+        .insert([task])
         .select()
         .single();
     
       if (error) {
         console.log('Task save error:', error);
+        alert('Task save error. Check console.');
         return null;
       }
     
