@@ -806,6 +806,29 @@
     
       return `${year}-${month}-${day}`;
     }
+
+    function getDayKeyFromDate(dateISO) {
+      const date = new Date(dateISO + 'T00:00:00');
+      const day = date.getDay();
+    
+      const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    
+      return dayMap[day];
+    }
+    
+    function isCustomDayTask(task, dateISO = getTodayISO()) {
+      if (task.frequency !== 'custom') {
+        return false;
+      }
+    
+      if (!task.days_of_week || !Array.isArray(task.days_of_week)) {
+        return false;
+      }
+    
+      const dayKey = getDayKeyFromDate(dateISO);
+    
+      return task.days_of_week.includes(dayKey);
+    }
     
     async function processHistoryForDate(dateISO) {
       const { data, error } = await db
