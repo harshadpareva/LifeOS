@@ -1372,6 +1372,12 @@
       const frequency = document.getElementById('taskFrequency').value;
       const repeatDaily = frequency === 'daily';
       const taskDate = document.getElementById('taskDate').value || getTodayISO();
+      const daysOfWeek = frequency === 'custom' ? getSelectedCustomDays() : null;
+
+      if (frequency === 'custom' && daysOfWeek.length === 0) {
+        alert('Please select at least one day for custom frequency.');
+        return;
+      }
 
       if (name === '') {
         alert('Please enter a task name');
@@ -1387,6 +1393,7 @@
         actualTime: null,
         repeatDaily: repeatDaily,
         frequency: frequency,
+        days_of_week: daysOfWeek,
         plannedDate: taskDate,
         completedDate: null,
         date: taskDate,
@@ -1407,6 +1414,11 @@
       document.getElementById('plannedTime').value = '';
       document.getElementById('taskFrequency').value = 'once';
       document.getElementById('taskDate').value = '';
+      document.getElementById('customDaysBox').style.display = 'none';
+
+      document.querySelectorAll('#customDaysBox input[type="checkbox"]').forEach(box => {
+        box.checked = false;
+      });
 
       saveTasks();
       renderTasks();
@@ -2747,6 +2759,12 @@
         </div>
       ` + heatmapHtml;
       dashboardBox.style.display = 'block';
+    }
+
+    function getSelectedCustomDays() {
+      const checkboxes = document.querySelectorAll('#customDaysBox input[type="checkbox"]:checked');
+    
+      return Array.from(checkboxes).map(box => box.value);
     }
     
     function closeHistoryDashboard() {
