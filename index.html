@@ -1157,7 +1157,8 @@
           </div>
           <div class="task-meta">
             Planned: ${task.plannedTime || '—'} • 
-            Actual: ${task.actualTime || '—'}
+            Actual: ${task.actualTime || '—'} • 
+            ${getFrequencyLabel(task)}
           </div>
           
           <div style="font-size:12px; margin-top:4px;">
@@ -1223,6 +1224,24 @@
       if (event.key === 'Enter') {
         addTask();
       }
+    }
+
+    function getFrequencyLabel(task) {
+      if (task.frequency === 'daily' || task.repeatDaily === true) {
+        return 'Daily';
+      }
+    
+      if (task.frequency === 'weekly') {
+        return 'Weekly';
+      }
+    
+      if (task.frequency === 'custom' && Array.isArray(task.days_of_week)) {
+        return task.days_of_week
+          .map(day => day.charAt(0).toUpperCase() + day.slice(1))
+          .join(', ');
+      }
+    
+      return 'One-time';
     }
     
     function updateSummary() {
