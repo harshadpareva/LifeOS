@@ -2137,29 +2137,42 @@
     }
     
     async function checkAuth() {
-      const { data } = await db.auth.getSession();
+      const { data, error } = await db.auth.getSession();
     
-      if (data.session) {
+      if (error) {
+        console.log('Auth session error:', error);
+    
+        await db.auth.signOut();
+    
+        currentUser = null;
+        document.getElementById('authBox').style.display = 'block';
+        document.getElementById('appContent').style.display = 'none';
+    
+        return;
+      }
+    
+      if (data && data.session && data.session.user) {
         currentUser = data.session.user;
     
         document.getElementById('authBox').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
     
+        await loadUserSettings();
         await handleDateRollover();
         await loadTasksFromSupabase();
         await loadUpcomingTasks();
         await updateWeeklySummary();
         await updateHabitInsights();
-      } else {
-        currentUser = null;
     
-        document.getElementById('authBox').style.display = 'block';
-        document.getElementById('appContent').style.display = 'none';
-
-        await loadUserSettings();
+        return;
       }
+    
+      currentUser = null;
+    
+      document.getElementById('authBox').style.display = 'block';
+      document.getElementById('appContent').style.display = 'none';
     }
-
+    
     async function hideWelcome() {
       document.getElementById('welcomeCard').style.display = 'none';
     
@@ -2320,6 +2333,10 @@
     }
 
     async function loadUserSettings() {
+      if (!currentUser || !currentUser.id) {
+        return;
+      }
+      
       document.getElementById('welcomeCard').style.display = 'none';
     
       const { data, error } = await db
