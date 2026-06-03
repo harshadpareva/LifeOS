@@ -829,6 +829,33 @@
     
       return task.days_of_week.includes(dayKey);
     }
+
+    function editCustomDaysPrompt(currentDays) {
+      const current = Array.isArray(currentDays) ? currentDays.join(',') : '';
+    
+      const input = prompt(
+        'Enter custom days using: mon,tue,wed,thu,fri,sat,sun',
+        current
+      );
+    
+      if (input === null) {
+        return null;
+      }
+    
+      const validDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    
+      const selectedDays = input
+        .split(',')
+        .map(day => day.trim().toLowerCase())
+        .filter(day => validDays.includes(day));
+    
+      if (selectedDays.length === 0) {
+        alert('Please enter at least one valid day.');
+        return null;
+      }
+    
+      return selectedDays;
+    }
     
     async function processHistoryForDate(dateISO) {
       const { data, error } = await db
@@ -2066,19 +2093,30 @@
       const currentFrequency = tasks[index].frequency || (tasks[index].repeatDaily ? 'daily' : 'once');
 
       const newFrequency = prompt(
-        'Edit frequency: once, daily, or weekly',
+        'Edit frequency: once, daily, weekly, or custom',
         currentFrequency
       );
-
-      if (!['once', 'daily', 'weekly'].includes(newFrequency)) {
-        alert('Invalid frequency. Use once, daily, or weekly.');
+      
+      if (!['once', 'daily', 'weekly', 'custom'].includes(newFrequency)) {
+        alert('Invalid frequency. Use once, daily, weekly, or custom.');
         return;
       }
-
+      
+      let newDaysOfWeek = null;
+      
+      if (newFrequency === 'custom') {
+        newDaysOfWeek = editCustomDaysPrompt(tasks[index].days_of_week);
+      
+        if (!newDaysOfWeek) {
+          return;
+        }
+      }
+      
       tasks[index].name = newName.trim();
       tasks[index].category = newCategory;
       tasks[index].frequency = newFrequency;
       tasks[index].repeatDaily = newFrequency === 'daily';
+      tasks[index].days_of_week = newFrequency === 'custom' ? newDaysOfWeek : null;
       
       const { error } = await db
         .from('tasks')
@@ -2086,7 +2124,8 @@
           name: tasks[index].name,
           category: tasks[index].category,
           frequency: tasks[index].frequency,
-          repeatDaily: tasks[index].repeatDaily
+          repeatDaily: tasks[index].repeatDaily,
+          days_of_week: tasks[index].days_of_week
         })
         .eq('id', tasks[index].id)
         .eq('user_id', currentUser.id);
