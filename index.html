@@ -2236,13 +2236,22 @@
       const recurringNames = new Set();
     
       allTasks.forEach(task => {
-        if (task.frequency === 'daily' || task.frequency === 'weekly' || task.repeatDaily === true) {
+        if (
+          task.frequency === 'daily' ||
+          task.frequency === 'weekly' ||
+          task.frequency === 'custom' ||
+          task.repeatDaily === true
+        ) {
           recurringNames.add(task.name);
         }
       });
     
       logs.forEach(log => {
-        if (log.frequency === 'daily' || log.frequency === 'weekly') {
+        if (
+          log.frequency === 'daily' ||
+          log.frequency === 'weekly' ||
+          log.frequency === 'custom'
+        ) {
           recurringNames.add(log.task_name);
         }
       });
@@ -2371,7 +2380,7 @@
         .from('task_logs')
         .select('task_name, frequency, plannedTime')
         .eq('user_id', currentUser.id)
-        .in('frequency', ['daily', 'weekly']);
+        .in('frequency', ['daily', 'weekly', 'custom']);
     
       if (error) {
         console.log('Activity options load error:', error);
