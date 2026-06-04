@@ -863,7 +863,7 @@
         .from('tasks')
         .select('*')
         .eq('user_id', currentUser.id)
-        .or(`plannedDate.eq.${dateISO},date.eq.${dateISO},completedDate.eq.${dateISO},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly,frequency.eq.custom`);
+        .or(`plannedDate.eq.${dateISO},date.eq.${dateISO},completedDate.eq.${dateISO},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly,frequency.eq.custom,frequency.eq.monthly`);
     
       if (error) {
         console.log('History process load error:', error);
@@ -894,19 +894,21 @@
           const daily = isDailyTask(task);
           const weeklyDue = isWeeklyTask(task) && isWeeklyDueOnDate(task, dateISO);
           const customDue = isCustomDayTask(task, dateISO);
+          const monthlyDue = isMonthlyTask(task) && isMonthlyDueOnDate(task, dateISO);
           const plannedThatDay = taskDate === dateISO;
           const completedThatDay = task.completedDate === dateISO;
           
-          return completedThatDay || (existedOnDate && (daily || weeklyDue || customDue || plannedThatDay));
+          return completedThatDay || (existedOnDate && (daily || weeklyDue || customDue || monthlyDue || plannedThatDay));
         })
         .map(task => {
           const taskDate = task.plannedDate || task.date;
           const daily = isDailyTask(task);
           const weeklyDue = isWeeklyTask(task) && isWeeklyDueOnDate(task, dateISO);
           const customDue = isCustomDayTask(task, dateISO);
+          const monthlyDue = isMonthlyTask(task) && isMonthlyDueOnDate(task, dateISO);
           const plannedThatDay = taskDate === dateISO;
           const completedThatDay = task.completedDate === dateISO;
-          const dueThatDay = daily || weeklyDue || customDue || plannedThatDay;
+          const dueThatDay = daily || weeklyDue || customDue || monthlyDue || plannedThatDay;
     
           if (completedThatDay) {
             return {
