@@ -650,6 +650,7 @@
         <option value="daily">Daily</option>
         <option value="weekly">Weekly</option>
         <option value="custom">Custom days</option>
+        <option value="monthly">Monthly</option>
       </select>
       
       <div id="customDaysBox" style="display:none; margin-bottom:12px;">
@@ -946,7 +947,7 @@
         .from('tasks')
         .select('*')
         .eq('user_id', currentUser.id)
-        .or(`plannedDate.eq.${today},completedDate.eq.${today},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly,frequency.eq.custom`);
+        .or(`plannedDate.eq.${today},completedDate.eq.${today},repeatDaily.eq.true,frequency.eq.daily,frequency.eq.weekly,frequency.eq.custom,frequency.eq.monthly`);
     
       if (error) {
         console.log('Load error:', error);
@@ -963,6 +964,10 @@
     
           if (task.frequency === 'custom') {
             return isCustomDayTask(task, today);
+          }
+
+          if (task.frequency === 'monthly') {
+            return isMonthlyDueOnDate(task, today);
           }
     
           if (task.frequency === 'daily' || task.repeatDaily === true) {
@@ -981,7 +986,8 @@
               task.frequency === 'daily' ||
               task.repeatDaily === true ||
               task.frequency === 'weekly' ||
-              task.frequency === 'custom'
+              task.frequency === 'custom' ||
+              task.frequency === 'monthly'
             ) &&
             task.completedDate !== today;
     
@@ -1082,6 +1088,21 @@
     
     function saveTasks() {
       localStorage.setItem('lifeosTasks', JSON.stringify(tasks));
+    }
+
+    function isMonthlyTask(task) {
+      return task.frequency === 'monthly';
+    }
+    
+    function isMonthlyDueOnDate(task, dateISO) {
+      if (!task.plannedDate || !dateISO) {
+        return false;
+      }
+    
+      const plannedDay = Number(task.plannedDate.slice(8, 10));
+      const checkDay = Number(dateISO.slice(8, 10));
+    
+      return plannedDay === checkDay;
     }
 
     function getCurrentTime() {
