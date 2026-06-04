@@ -1257,6 +1257,11 @@
       if (task.frequency === 'weekly') {
         return 'Weekly';
       }
+
+      if (task.frequency === 'monthly') {
+        const day = task.plannedDate ? Number(task.plannedDate.slice(8, 10)) : '';
+        return day ? `Monthly on ${day}` : 'Monthly';
+      }
     
       if (task.frequency === 'custom' && Array.isArray(task.days_of_week)) {
         return task.days_of_week
@@ -2321,6 +2326,7 @@
           task.frequency === 'daily' ||
           task.frequency === 'weekly' ||
           task.frequency === 'custom' ||
+          task.frequency === 'monthly' ||
           task.repeatDaily === true
         ) {
           recurringNames.add(task.name);
@@ -2331,7 +2337,8 @@
         if (
           log.frequency === 'daily' ||
           log.frequency === 'weekly' ||
-          log.frequency === 'custom'
+          log.frequency === 'custom' ||
+          log.frequency === 'monthly'
         ) {
           recurringNames.add(log.task_name);
         }
@@ -2461,7 +2468,7 @@
         .from('task_logs')
         .select('task_name, frequency, plannedTime')
         .eq('user_id', currentUser.id)
-        .in('frequency', ['daily', 'weekly', 'custom']);
+        .in('frequency', ['daily', 'weekly', 'custom', 'monthly']);
     
       if (error) {
         console.log('Activity options load error:', error);
